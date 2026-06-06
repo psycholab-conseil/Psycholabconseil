@@ -1153,18 +1153,172 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
         <div style="font-size:.72rem;color:#7DDBF5;font-weight:600">— L'équipe Psycholab · Plateforme B2B Bien-Être</div>
       </div>
       <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap">
-        <button onclick="showSignup('patient')" style="background:#fff;color:var(--teal-d);border:none;font-size:.88rem;font-weight:700;padding:.75rem 1.4rem;border-radius:var(--r-sm);cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(0,0,0,.2)">💼 Mon entreprise est partenaire — Accéder</button>
-        <button onclick="showSignup('pro')" style="background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(125,219,245,.35);font-size:.86rem;font-weight:500;padding:.72rem 1.2rem;border-radius:var(--r-sm);cursor:pointer;backdrop-filter:blur(4px)">🩺 Je suis spécialiste</button>
+        <button onclick="scrollToDevis()" style="background:#fff;color:var(--teal-d);border:none;font-size:.88rem;font-weight:700;padding:.75rem 1.4rem;border-radius:var(--r-sm);cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(0,0,0,.2)">📋 Demander un devis gratuit</button>
+        <button onclick="showSignup('patient')" style="background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(125,219,245,.35);font-size:.86rem;font-weight:500;padding:.72rem 1.2rem;border-radius:var(--r-sm);cursor:pointer;backdrop-filter:blur(4px)">💼 Déjà partenaire — Accéder</button>
       </div>
     </div>
   </div>
 
-    <div class="cta-banner">
+  <!-- ══ SECTION DEVIS ══ -->
+  <div id="section-devis" style="background:linear-gradient(160deg,#F0F6FF 0%,#EAF2FF 60%,#E8F0FB 100%);padding:3rem 1.2rem">
+    <div style="max-width:660px;margin:0 auto">
+
+      <!-- Header -->
+      <div style="text-align:center;margin-bottom:1.8rem">
+        <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(26,95,191,.1);border:1px solid rgba(26,95,191,.2);color:var(--teal-d);font-size:.65rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:.3rem .85rem;border-radius:20px;margin-bottom:.8rem">
+          📋 Demande de devis
+        </div>
+        <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.5rem,5vw,2.1rem);font-weight:700;color:var(--ch);line-height:1.2;margin-bottom:.6rem">
+          Votre entreprise souhaite<br/><em style="color:var(--teal-mid)">adopter Psycholab ?</em>
+        </h2>
+        <p style="color:var(--mid);font-size:.88rem;line-height:1.65">
+          Remplissez ce formulaire en 2 minutes. Notre équipe vous répond sous <strong>48h ouvrées</strong> avec une offre technique et financière personnalisée.
+        </p>
+      </div>
+
+      <!-- Pricing tiers teaser -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin-bottom:1.8rem">
+        <div style="background:#fff;border:2px solid var(--border);border-radius:var(--r-md);padding:.9rem .7rem;text-align:center">
+          <div style="font-size:.7rem;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem">Starter</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:var(--teal-d)">10–49</div>
+          <div style="font-size:.68rem;color:var(--soft)">employés</div>
+        </div>
+        <div style="background:var(--grad-accent);border:2px solid var(--teal);border-radius:var(--r-md);padding:.9rem .7rem;text-align:center;box-shadow:0 4px 20px rgba(26,95,191,.2)">
+          <div style="font-size:.7rem;font-weight:700;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem">Business</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:#fff">50–199</div>
+          <div style="font-size:.68rem;color:rgba(255,255,255,.7)">employés</div>
+        </div>
+        <div style="background:#fff;border:2px solid var(--border);border-radius:var(--r-md);padding:.9rem .7rem;text-align:center">
+          <div style="font-size:.7rem;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem">Enterprise</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:var(--teal-d)">200+</div>
+          <div style="font-size:.68rem;color:var(--soft)">employés</div>
+        </div>
+      </div>
+
+      <!-- Form card -->
+      <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r-xl);padding:1.8rem 1.4rem;box-shadow:0 16px 60px rgba(26,95,191,.1)">
+
+        <div id="devis-error" class="error-box" style="display:none"></div>
+        <div id="devis-success" style="display:none;text-align:center;padding:1.5rem 0">
+          <div style="width:72px;height:72px;border-radius:50%;background:var(--grad-accent);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1rem;box-shadow:0 8px 28px rgba(26,95,191,.3)">✓</div>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--ch);margin-bottom:.4rem">Demande envoyée !</h3>
+          <p style="font-size:.84rem;color:var(--mid);line-height:1.65">Notre équipe analyse votre demande et vous contacte sous <strong>48h ouvrées</strong> avec votre offre personnalisée.</p>
+        </div>
+
+        <div id="devis-form-body">
+          <!-- Société -->
+          <div style="font-size:.72rem;font-weight:700;color:var(--teal-d);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.85rem;padding-bottom:.5rem;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:.4rem">🏢 Informations société</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+            <div class="fgroup"><label>Nom de la société *</label><input id="dv-societe" placeholder="Ex: Groupe ABC"/></div>
+            <div class="fgroup"><label>Secteur d'activité *</label>
+              <select id="dv-secteur" style="border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:.86rem;color:var(--ch);padding:.62rem .9rem;background:var(--sand);outline:none;width:100%">
+                <option value="">-- Choisir --</option>
+                <option>Industrie / Manufacture</option>
+                <option>Services / Conseil</option>
+                <option>Santé / Médical</option>
+                <option>Finance / Banque / Assurance</option>
+                <option>Technologie / IT</option>
+                <option>Commerce / Distribution</option>
+                <option>Éducation / Formation</option>
+                <option>Collectivité / Administration</option>
+                <option>Transport / Logistique</option>
+                <option>Autre</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+            <div class="fgroup"><label>Ville / Pays *</label><input id="dv-ville" placeholder="Ex: Paris, France"/></div>
+            <div class="fgroup"><label>Nombre d'employés concernés *</label>
+              <select id="dv-nb-employes" style="border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:.86rem;color:var(--ch);padding:.62rem .9rem;background:var(--sand);outline:none;width:100%">
+                <option value="">-- Effectif --</option>
+                <option>10 – 49 employés</option>
+                <option>50 – 99 employés</option>
+                <option>100 – 199 employés</option>
+                <option>200 – 499 employés</option>
+                <option>500 employés et plus</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Contact -->
+          <div style="font-size:.72rem;font-weight:700;color:var(--teal-d);text-transform:uppercase;letter-spacing:.08em;margin:.5rem 0 .85rem;padding-bottom:.5rem;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:.4rem">👤 Votre contact</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+            <div class="fgroup"><label>Prénom *</label><input id="dv-prenom" placeholder="Prénom"/></div>
+            <div class="fgroup"><label>Nom *</label><input id="dv-nom" placeholder="Nom"/></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+            <div class="fgroup"><label>Fonction *</label><input id="dv-fonction" placeholder="Ex: DRH, Directeur…"/></div>
+            <div class="fgroup"><label>Téléphone *</label><input type="tel" id="dv-tel" placeholder="+33 6 XX XX XX XX"/></div>
+          </div>
+          <div class="fgroup"><label>Email professionnel *</label><input type="email" id="dv-email" placeholder="prenom.nom@societe.fr"/></div>
+
+          <!-- Besoin -->
+          <div style="font-size:.72rem;font-weight:700;color:var(--teal-d);text-transform:uppercase;letter-spacing:.08em;margin:.5rem 0 .85rem;padding-bottom:.5rem;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:.4rem">🎯 Votre besoin</div>
+
+          <div class="fgroup"><label>Motif principal de la demande *</label>
+            <select id="dv-motif" style="border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:.86rem;color:var(--ch);padding:.62rem .9rem;background:var(--sand);outline:none;width:100%">
+              <option value="">-- Sélectionner --</option>
+              <option>Prévention des risques psychosociaux (RPS)</option>
+              <option>Réduction du stress et du burn-out</option>
+              <option>Amélioration de la QVT (qualité de vie au travail)</option>
+              <option>Accompagnement suite à une restructuration</option>
+              <option>Initiative RSE / bien-être collaborateur</option>
+              <option>Obligation légale / accord d'entreprise</option>
+              <option>Autre / à préciser</option>
+            </select>
+          </div>
+
+          <div class="fgroup">
+            <label>Crédits souhaités par employé</label>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem;margin-top:.2rem" id="dv-credits-grid">
+              <label style="border:2px solid var(--border);border-radius:var(--r-sm);padding:.55rem .3rem;text-align:center;cursor:pointer;font-size:.8rem;font-weight:600;color:var(--mid);transition:all .2s" onclick="selectCredits(3,this)">3</label>
+              <label style="border:2px solid var(--teal);background:var(--teal-xl);border-radius:var(--r-sm);padding:.55rem .3rem;text-align:center;cursor:pointer;font-size:.8rem;font-weight:700;color:var(--teal-d);transition:all .2s" onclick="selectCredits(5,this)" id="dv-cr-default">5 ✓</label>
+              <label style="border:2px solid var(--border);border-radius:var(--r-sm);padding:.55rem .3rem;text-align:center;cursor:pointer;font-size:.8rem;font-weight:600;color:var(--mid);transition:all .2s" onclick="selectCredits(8,this)">8</label>
+              <label style="border:2px solid var(--border);border-radius:var(--r-sm);padding:.55rem .3rem;text-align:center;cursor:pointer;font-size:.8rem;font-weight:600;color:var(--mid);transition:all .2s" onclick="selectCredits(10,this)">10</label>
+            </div>
+            <input type="hidden" id="dv-credits" value="5"/>
+            <div style="font-size:.7rem;color:var(--soft);margin-top:.3rem">1 crédit = 1 séance de 45 min · La recommandation standard est 5 crédits/an</div>
+          </div>
+
+          <div class="fgroup">
+            <label>Message complémentaire <span style="font-weight:400;color:var(--soft)">(optionnel)</span></label>
+            <textarea id="dv-message" placeholder="Précisez votre contexte, vos contraintes, votre calendrier de déploiement souhaité…" style="min-height:80px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:.86rem;color:var(--ch);padding:.62rem .9rem;background:var(--sand);outline:none;width:100%;resize:vertical;line-height:1.55"></textarea>
+          </div>
+
+          <!-- How did you hear -->
+          <div class="fgroup">
+            <label>Comment avez-vous connu Psycholab ?</label>
+            <select id="dv-source" style="border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:.86rem;color:var(--ch);padding:.62rem .9rem;background:var(--sand);outline:none;width:100%">
+              <option value="">-- Optionnel --</option>
+              <option>Recommandation / bouche à oreille</option>
+              <option>Recherche internet</option>
+              <option>Réseaux sociaux (LinkedIn, etc.)</option>
+              <option>Événement / Salon RH</option>
+              <option>Partenaire / Cabinet conseil</option>
+              <option>Autre</option>
+            </select>
+          </div>
+
+          <div class="cb-row" style="margin-bottom:1rem">
+            <input type="checkbox" id="dv-rgpd" style="width:16px;height:16px;flex-shrink:0;margin-top:.1rem;accent-color:var(--teal)"/>
+            <p class="cb-txt">J'accepte que Psycholab utilise ces informations pour me contacter avec une offre personnalisée. Conformité <strong>RGPD</strong> garantie — données non cédées à des tiers.</p>
+          </div>
+
+          <button onclick="soumettreDevis()" style="width:100%;background:var(--grad-accent);color:#fff;border:none;font-size:.92rem;font-weight:700;padding:.9rem;border-radius:var(--r-sm);cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(26,95,191,.3)" id="btn-devis-submit">
+            📋 Envoyer ma demande de devis →
+          </button>
+          <p style="text-align:center;font-size:.72rem;color:var(--soft);margin-top:.7rem">Réponse sous 48h ouvrées · Sans engagement · Gratuit</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-banner">
     <h2>Prêt à transformer le bien-être de vos équipes ?</h2>
-    <p>Rejoignez Psycholab — 100% en ligne · 🧠 Bien-être au travail certifiés · Monde entier</p>
+    <p>Psycholab — Confidentiel · Certifié · Déontologique · Accessible en 48h</p>
     <div class="cta-btns">
-      <button class="cta-btn-p" onclick="showSignup('patient')">👤 J'ai reçu mon invitation</button>
-      <button class="cta-btn-s" onclick="showSignup('pro')">🩺 Je suis spécialiste</button>
+      <button class="cta-btn-p" onclick="scrollToDevis()" style="font-weight:700">📋 Demander un devis gratuit</button>
+      <button class="cta-btn-s" onclick="showSignup('patient')">👤 Déjà partenaire — Accéder</button>
     </div>
   </div>
   <div class="footer">
@@ -10177,6 +10331,146 @@ function initTzClock(){
     if(badge){badge.textContent='🟢 Synchronisé';badge.style.background='rgba(30,122,74,.35)';}
     if(btn){btn.textContent='✅ Google Agenda connecté';btn.style.color='#1E7A4A';btn.style.background='#EBF8F1';}
     if(info)info.style.display='block';
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  DEVIS / DEMANDE D'OFFRE
+// ═══════════════════════════════════════════════
+let selectedCredits = 5;
+
+function selectCredits(val, el) {
+  selectedCredits = val;
+  document.getElementById('dv-credits').value = val;
+  // Reset all credit buttons
+  const btns = document.querySelectorAll('#dv-credits-grid label');
+  btns.forEach(b => {
+    b.style.border = '2px solid var(--border)';
+    b.style.background = '';
+    b.style.color = 'var(--mid)';
+    b.style.fontWeight = '600';
+    b.textContent = b.textContent.replace(' ✓','');
+  });
+  // Highlight selected
+  el.style.border = '2px solid var(--teal)';
+  el.style.background = 'var(--teal-xl)';
+  el.style.color = 'var(--teal-d)';
+  el.style.fontWeight = '700';
+  if(!el.textContent.includes('✓')) el.textContent = val + ' ✓';
+}
+
+function scrollToDevis() {
+  const el = document.getElementById('section-devis');
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  else goHome();
+}
+
+async function soumettreDevis() {
+  const btn = document.getElementById('btn-devis-submit');
+  const errEl = document.getElementById('devis-error');
+  const successEl = document.getElementById('devis-success');
+  const formBody = document.getElementById('devis-form-body');
+
+  // Validation
+  const societe = document.getElementById('dv-societe').value.trim();
+  const secteur = document.getElementById('dv-secteur').value;
+  const ville = document.getElementById('dv-ville').value.trim();
+  const nbEmployes = document.getElementById('dv-nb-employes').value;
+  const prenom = document.getElementById('dv-prenom').value.trim();
+  const nom = document.getElementById('dv-nom').value.trim();
+  const fonction = document.getElementById('dv-fonction').value.trim();
+  const tel = document.getElementById('dv-tel').value.trim();
+  const email = document.getElementById('dv-email').value.trim();
+  const motif = document.getElementById('dv-motif').value;
+  const credits = document.getElementById('dv-credits').value || '5';
+  const message = document.getElementById('dv-message').value.trim();
+  const source = document.getElementById('dv-source').value;
+  const rgpd = document.getElementById('dv-rgpd').checked;
+
+  errEl.style.display = 'none';
+
+  if(!societe || !secteur || !ville || !nbEmployes) {
+    errEl.textContent = 'Merci de renseigner le nom de la société, le secteur, la ville et l'effectif.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if(!prenom || !nom || !fonction || !tel || !email) {
+    errEl.textContent = 'Merci de renseigner tous les champs contact (prénom, nom, fonction, téléphone, email).';
+    errEl.style.display = 'block';
+    return;
+  }
+  if(!email.includes('@') || !email.includes('.')) {
+    errEl.textContent = 'Adresse email invalide.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if(!motif) {
+    errEl.textContent = 'Merci de sélectionner le motif principal de votre demande.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if(!rgpd) {
+    errEl.textContent = 'Merci d'accepter l'utilisation de vos données pour traiter votre demande.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Envoi en cours…';
+
+  try {
+    // Save to Supabase
+    const db = getDB();
+    if(!db.devis) db.devis = [];
+    const devisEntry = {
+      id: 'dev_' + Date.now(),
+      societe, secteur, ville, nbEmployes,
+      prenom, nom, fonction, tel, email,
+      motif, credits, message, source,
+      createdAt: new Date().toISOString(),
+      status: 'nouveau'
+    };
+    db.devis.push(devisEntry);
+    saveDB(db);
+
+    // Try Supabase
+    try {
+      await supa.from('devis').insert([{
+        id: devisEntry.id,
+        societe, secteur, ville,
+        nb_employes: nbEmployes,
+        prenom, nom, fonction, tel, email,
+        motif, credits_souhaites: parseInt(credits),
+        message, source,
+        status: 'nouveau',
+        created_at: devisEntry.createdAt
+      }]);
+    } catch(e) { console.warn('Supabase devis:', e); }
+
+    // Send email via EmailJS
+    try {
+      await emailjs.send('service_psycholab', 'template_devis', {
+        to_email: 'reservation.psycholab@gmail.com',
+        societe, secteur, ville, nb_employes: nbEmployes,
+        contact: prenom + ' ' + nom + ' — ' + fonction,
+        tel, email_contact: email,
+        motif, credits_souhaites: credits,
+        message: message || '(aucun message complémentaire)',
+        source: source || 'Non précisé',
+        date_demande: new Date().toLocaleDateString('fr-FR')
+      });
+    } catch(e) { console.warn('EmailJS devis:', e); }
+
+    // Show success
+    formBody.style.display = 'none';
+    successEl.style.display = 'block';
+    toast('✅ Demande de devis envoyée — réponse sous 48h', 'green');
+
+  } catch(e) {
+    errEl.textContent = 'Une erreur est survenue. Veuillez réessayer ou nous contacter directement.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = '📋 Envoyer ma demande de devis →';
   }
 }
 
