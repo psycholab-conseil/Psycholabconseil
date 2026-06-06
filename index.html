@@ -389,16 +389,7 @@ async function sbLoadRdvs(){
       };
       const idx=db.rdvs.findIndex(x=>x.id===rdv.id);
       if(idx>=0){db.rdvs[idx]={...db.rdvs[idx],...rdv};}
-      else{// Deduct 1 credit
-  const s=getSession();
-  if(s&&s.type==='patient'){
-    const usr=db.users?db.users.find(u=>u.id===s.id):null;
-    if(usr){
-      if(usr.credits===undefined)usr.credits=5;
-      usr.credits=Math.max(0,usr.credits-1);
-    }
-  }
-  db.rdvs.push(rdv);}
+      else{db.rdvs.push(rdv);}
     });
     saveDB(db);
     return data;
@@ -1465,7 +1456,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
       <div id="spat-pseudo-field" style="display:none">
         <div class="fgroup">
           <label>🎭 Votre pseudonyme *</label>
-          <input id="spat-pseudo" placeholder="Ex: Jasmine, employé42, Anon_TN…"/>
+          <input id="spat-pseudo" placeholder="Ex: Jasmine, Employe42, Anon_TN…"/>
           <div style="font-size:.7rem;color:var(--soft);margin-top:.3rem">Ce pseudonyme sera visible uniquement par votre spécialiste</div>
         </div>
       </div>
@@ -3066,7 +3057,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.7rem">
           <div>
             <div style="font-size:.68rem;opacity:.75;margin-bottom:.3rem">Tarif employé</div>
-            <div style="display:flex;align-items:center;gap:.3rem"><input id="adm-tarif-employé" type="number" value="38" min="1" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:6px;color:#fff;font-size:.9rem;font-weight:700;padding:.3rem .5rem;width:70px;text-align:center"/> <span style="font-size:.8rem">€</span></div>
+            <div style="display:flex;align-items:center;gap:.3rem"><input id="adm-tarif-employe" type="number" value="38" min="1" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:6px;color:#fff;font-size:.9rem;font-weight:700;padding:.3rem .5rem;width:70px;text-align:center"/> <span style="font-size:.8rem">€</span></div>
           </div>
           <div>
             <div style="font-size:.68rem;opacity:.75;margin-bottom:.3rem">Rémunération pro</div>
@@ -6000,7 +5991,7 @@ function getPatientTZ(){
 
 function formatDualTime(dateStr, slot){
   const TUNIS_TZ='Europe/Paris';
-  const employéTZ=getPatientTZ();
+  const patientTZ=getPatientTZ();
   // Construire la date avec le slot
   if(!dateStr||!slot) return '';
   const [h,m]=(slot||'00:00').split(':').map(Number);
@@ -6008,9 +5999,9 @@ function formatDualTime(dateStr, slot){
   base.setHours(h,m,0,0);
   try{
     const tunisFmt=new Intl.DateTimeFormat('fr-FR',{timeZone:TUNIS_TZ,hour:'2-digit',minute:'2-digit'}).format(base);
-    if(employéTZ===TUNIS_TZ) return tunisFmt+' (Tunisie)';
-    const patFmt=new Intl.DateTimeFormat('fr-FR',{timeZone:employéTZ,hour:'2-digit',minute:'2-digit'}).format(base);
-    const patCity=employéTZ.split('/').pop().replace('_',' ');
+    if(patientTZ===TUNIS_TZ) return tunisFmt+' (Tunisie)';
+    const patFmt=new Intl.DateTimeFormat('fr-FR',{timeZone:patientTZ,hour:'2-digit',minute:'2-digit'}).format(base);
+    const patCity=patientTZ.split('/').pop().replace('_',' ');
     return tunisFmt+' (🇹🇳 Tunisie) · '+patFmt+' ('+patCity+')';
   }catch(e){return slot+' (Tunisie)';}
 }
@@ -8075,10 +8066,10 @@ function showAdminProProfile(proId){
         }
         patMap[r.patId].rdvs.push(r);
       });
-      const employés=Object.values(patMap);
-      if(!employés.length) return '<div style="text-align:center;padding:1rem;color:var(--soft);font-size:.78rem;background:var(--sand);border-radius:8px">Aucun employé enregistré</div>';
+      const patientsMap=Object.values(patMap);
+      if(!patientsMap.length) return '<div style="text-align:center;padding:1rem;color:var(--soft);font-size:.78rem;background:var(--sand);border-radius:8px">Aucun employé enregistré</div>';
 
-      return employés.map(pat=>{
+      return patientsMap.map(pat=>{
         const patRdvs=pat.rdvs.sort((a,b)=>new Date(b.date)-new Date(a.date));
         const nbTotal=patRdvs.length;
         const nbValidees=patRdvs.filter(r=>r.validationStatus==='validated').length;
@@ -9491,7 +9482,7 @@ function signalerAbsencePatient(rdvId){
     toast('⚠️ 1ère absence enregistrée. Crédit conservé au employé. Vous serez compensé.','green');
 
   } else {
-    // 2ème absence et plus → séance perdue pour le employé, pro compensé
+    // 2ème absence et plus → séance perdue pour l'employé, pro compensé
     rdv.absenceStatus='pat_absent_lost';
     rdv.status='done';
     if(user){
@@ -9981,11 +9972,11 @@ function renderRemuneration(){
 //  ADMIN — TARIFS & RÉMUNÉRATIONS
 // ================================================
 function saveTarifs(){
-  const employé=parseInt(document.getElementById('adm-tarif-employé').value)||38;
+  const tarifEmploye=parseInt(document.getElementById('adm-tarif-employe').value)||38;
   const pro=parseInt(document.getElementById('adm-tarif-pro').value)||38;
   if(pro>=employé){toast('⚠️ La rémunération pro doit être inférieure au tarif employé','red');return;}
   const db=getDB();
-  db.tarifs={employé,pro};
+  db.tarifs={patient:tarifEmploye,pro};
   saveDB(db);
   document.getElementById('adm-marge-calc').textContent=(employé-pro)+' €';
   toast('✅ Tarifs mis à jour — '+employé+'€ employé / '+pro+'€ pro','green');
@@ -10109,7 +10100,7 @@ function renderProFiches(){
           <div style="font-weight:700;color:var(--ch);font-size:.9rem">🎭 ${escHtml(emp.patFn||'Employé')} ${escHtml(emp.patLn||'')} <span style="font-size:.7rem;color:var(--soft);font-weight:400">(Mode anonyme)</span></div>
           <div style="font-size:.72rem;color:var(--soft)">${nbSea} séance${nbSea>1?'s':''} · ${escHtml(emp.spec||'')}</div>
         </div>
-        <button onclick="saveFiche('${eid}')" style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:.4rem .9rem;font-size:.75rem;font-weight:700;cursor:pointer">💾 Sauvegarder</button>
+        <button onclick="saveFicheEmploye('${eid}')" style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:.4rem .9rem;font-size:.75rem;font-weight:700;cursor:pointer">💾 Sauvegarder</button>
       </div>
       <div style="display:flex;flex-direction:column;gap:.6rem">
         <div class="fgroup"><label>🎯 Objectifs thérapeutiques</label><textarea id="fiche-obj-${eid}" placeholder="Objectifs définis avec l'employé..." style="min-height:60px">${escHtml(fiche.objectifs)}</textarea></div>
@@ -10120,7 +10111,7 @@ function renderProFiches(){
   }).join('');
 }
 
-function saveFiche(empId){
+function saveFicheEmploye(empId){
   const db=getDB();
   if(!db.fiches)db.fiches={};
   db.fiches[empId]={
@@ -10166,7 +10157,7 @@ function renderAdmStatsBienEtre(){
   </div>
   <div style="background:var(--teal-xl);border-radius:var(--r-md);padding:.9rem;margin-bottom:.9rem">
     <div style="font-size:.78rem;font-weight:700;color:var(--teal-d);margin-bottom:.5rem">🏷️ Thématiques consultées (anonymisées)</div>
-    ${specs.length===0?'<div style="font-size:.78rem;color:var(--soft)">Données insuffisantes pour l'instant</div>':specs.map(s=>`<span style="background:var(--white);border:1px solid var(--border);border-radius:20px;padding:.2rem .65rem;font-size:.72rem;color:var(--mid);margin:.1rem;display:inline-block">${escHtml(s)}</span>`).join('')}
+    ${specs.length===0?'<div style="font-size:.78rem;color:var(--soft)">Données insuffisantes</div>':specs.map(s=>`<span style="background:var(--white);border:1px solid var(--border);border-radius:20px;padding:.2rem .65rem;font-size:.72rem;color:var(--mid);margin:.1rem;display:inline-block">${escHtml(s)}</span>`).join('')}
   </div>
   <div style="background:#FFF3CD;border:1.5px solid #F59E0B;border-radius:var(--r-sm);padding:.7rem .9rem;font-size:.74rem;color:#78350F">
     ⚠️ Ces statistiques sont strictement anonymisées. Aucun nom d'employé ou détail de séance n'est accessible depuis ce tableau de bord.
@@ -10390,27 +10381,27 @@ async function soumettreDevis() {
   errEl.style.display = 'none';
 
   if(!societe || !secteur || !ville || !nbEmployes) {
-    errEl.textContent = 'Merci de renseigner le nom de la société, le secteur, la ville et l'effectif.';
+    errEl.textContent = 'Merci de renseigner: société, secteur, ville et effectif.';
     errEl.style.display = 'block';
     return;
   }
   if(!prenom || !nom || !fonction || !tel || !email) {
-    errEl.textContent = 'Merci de renseigner tous les champs contact (prénom, nom, fonction, téléphone, email).';
+    errEl.textContent = 'Champs contact incomplets: prénom, nom, fonction, téléphone, email.';
     errEl.style.display = 'block';
     return;
   }
   if(!email.includes('@') || !email.includes('.')) {
-    errEl.textContent = 'Adresse email invalide.';
+    errEl.textContent = 'Email invalide.';
     errEl.style.display = 'block';
     return;
   }
   if(!motif) {
-    errEl.textContent = 'Merci de sélectionner le motif principal de votre demande.';
+    errEl.textContent = 'Veuillez sélectionner le motif de votre demande.';
     errEl.style.display = 'block';
     return;
   }
   if(!rgpd) {
-    errEl.textContent = 'Merci d'accepter l'utilisation de vos données pour traiter votre demande.';
+    errEl.textContent = 'Veuillez accepter les conditions RGPD.';
     errEl.style.display = 'block';
     return;
   }
@@ -10467,7 +10458,7 @@ async function soumettreDevis() {
     toast('✅ Demande de devis envoyée — réponse sous 48h', 'green');
 
   } catch(e) {
-    errEl.textContent = 'Une erreur est survenue. Veuillez réessayer ou nous contacter directement.';
+    errEl.textContent = 'Erreur lors de l’envoi. Veuillez réessayer.';
     errEl.style.display = 'block';
     btn.disabled = false;
     btn.textContent = '📋 Envoyer ma demande de devis →';
