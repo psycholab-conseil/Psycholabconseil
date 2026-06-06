@@ -207,8 +207,8 @@ emailjs.init({
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL='https://oybfxetivkwnynpvojki.supabase.co';
-const SUPABASE_KEY='sb_publishable_3lGMf5FZavPM9aSnZEqlFA_6uzmH_CL';
+const SUPABASE_URL='https://ggdhyyrebhrqimgqohpe.supabase.co';
+const SUPABASE_KEY='sb_publishable_tpwC3-dEEKVgYAqh2qv8Xw_-C8VucUT';
 const supa=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 // -- Fonctions Supabase --
@@ -721,7 +721,7 @@ input,select,textarea{font-family:'Outfit',sans-serif}
 .rdv-date{background:var(--sand);border-radius:var(--r-sm);padding:.42rem .6rem;text-align:center;flex-shrink:0;min-width:44px}
 .rdv-d{font-size:1.15rem;font-weight:700;color:var(--ch);line-height:1}
 .rdv-m{font-size:.58rem;text-transform:uppercase;color:var(--soft);letter-spacing:.04em}
-.rdv-employé{font-size:.88rem;font-weight:600;color:var(--ch);margin-bottom:.12rem}
+.rdv-patient{font-size:.88rem;font-weight:600;color:var(--ch);margin-bottom:.12rem}
 .rdv-meta{font-size:.72rem;color:var(--soft)}
 .rdv-actions{display:flex;gap:.4rem;flex-wrap:wrap}
 .btn-ok{background:var(--green-l);color:var(--green);border:1.5px solid var(--green);font-size:.75rem;font-weight:600;padding:.35rem .8rem;border-radius:7px;transition:all var(--anim)}
@@ -942,17 +942,17 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
     <button class="dr-btn" onclick="goHome();closeDrawer()">🔍 Trouver un spécialiste</button>
     <div class="dr-sep"></div>
     <p class="dr-lbl">Mon compte</p>
-    <button class="dr-solid" onclick="showSignup('employé');closeDrawer()">Accéder à mon espace bien-être</button>
+    <button class="dr-solid" onclick="showSignup('patient');closeDrawer()">Accéder à mon espace bien-être</button>
     <div style="height:.5rem"></div>
     <button class="dr-outline" onclick="showSignup('pro');closeDrawer()">S'inscrire comme professionnel</button>
     <div style="height:.5rem"></div>
     <button class="dr-btn" onclick="showLogin();closeDrawer()">🔐 Se connecter</button>
   </div>
-  <div id="dr-employé" style="display:none">
-    <div class="user-chip" id="dr-employé-chip">Bonjour 👋<span id="dr-employé-name"></span></div>
+  <div id="dr-patient" style="display:none">
+    <div class="user-chip" id="dr-patient-chip">Bonjour 👋<span id="dr-patient-name"></span></div>
     <p class="dr-lbl" style="margin-top:.8rem">Navigation</p>
     <button class="dr-btn" onclick="goHome();closeDrawer()">🔍 Trouver un spécialiste</button>
-    <button class="dr-btn" onclick="goemployé();closeDrawer()">👤 Mon espace employé</button>
+    <button class="dr-btn" onclick="goPatient();closeDrawer()">👤 Mon espace employé</button>
     <div class="dr-sep"></div>
     <button class="dr-danger" onclick="doLogout();closeDrawer()">Déconnexion</button>
   </div>
@@ -989,7 +989,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
     </div>
     <!-- CTA inscription visiteur -->
     <div style="position:relative;z-index:1;margin-bottom:.5rem">
-      <button class="hero-btn-p" id="hero-cta-signup" onclick="showSignup('employé')" style="font-size:.95rem;font-weight:700;padding:.9rem 2rem;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.22);display:inline-flex;align-items:center;gap:.5rem">
+      <button class="hero-btn-p" id="hero-cta-signup" onclick="showSignup('patient')" style="font-size:.95rem;font-weight:700;padding:.9rem 2rem;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.22);display:inline-flex;align-items:center;gap:.5rem">
         👤 Créer mon compte gratuit
       </button>
     </div>
@@ -1163,7 +1163,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
     <h2>Prêt à transformer le bien-être de vos équipes ?</h2>
     <p>Rejoignez Psycholab — 100% en ligne · 🧠 Bien-être au travail certifiés · Monde entier</p>
     <div class="cta-btns">
-      <button class="cta-btn-p" onclick="showSignup('employé')">👤 J'ai reçu mon invitation</button>
+      <button class="cta-btn-p" onclick="showSignup('patient')">👤 J'ai reçu mon invitation</button>
       <button class="cta-btn-s" onclick="showSignup('pro')">🩺 Je suis spécialiste</button>
     </div>
   </div>
@@ -1184,7 +1184,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
       <p class="auth-sub">Recevez un lien de connexion par email — sans mot de passe</p>
 
       <div class="auth-tabs">
-        <button class="atab on" id="ltab-pat" onclick="switchLoginTab('employé')">👤 employé</button>
+        <button class="atab on" id="ltab-pat" onclick="switchLoginTab('patient')">👤 employé</button>
         <button class="atab" id="ltab-pro" onclick="switchLoginTab('pro')">🩺 Professionnel</button>
       </div>
 
@@ -1254,7 +1254,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
 </div>
 
 <!-- ══ VIEW: SIGNUP employé ══ -->
-<div class="view" id="v-signup-employé">
+<div class="view" id="v-signup-patient">
   <div class="auth-wrap">
     <div class="auth-card">
       <div class="auth-ico">👤</div>
@@ -1501,7 +1501,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
       <div id="spat-error" class="error-box"></div>
       <div class="cb-row"><input type="checkbox" id="spat-cgu"/><p class="cb-txt">J'accepte les <strong>Conditions Générales d'Utilisation</strong> et la <strong>Politique de confidentialité</strong>.</p></div>
       <div class="cb-row"><input type="checkbox" id="spat-notif" checked/><p class="cb-txt">✅ J'accepte de recevoir des <strong>notifications email</strong> pour mes rendez-vous (confirmation, rappels 24h et 2h avant).</p></div>
-      <button class="btn-submit" onclick="doSignupemployé()">Créer mon compte →</button>
+      <button class="btn-submit" onclick="doSignupPatient()">Créer mon compte →</button>
       <p class="auth-switch">Déjà un compte ? <a onclick="showLogin()">Se connecter</a></p>
     </div>
   </div>
@@ -1763,7 +1763,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
 </div>
 
 <!-- ══ VIEW: SUCCESS employé ══ -->
-<div class="view" id="v-success-employé">
+<div class="view" id="v-success-patient">
   <div class="auth-wrap">
     <div class="auth-card">
       <div class="success-screen">
@@ -1771,7 +1771,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
         <h2 class="success-title">Compte créé avec succès !</h2>
         <p class="success-sub">Bienvenue sur Psycholab. Un email de confirmation vous a été envoyé à :</p>
         <div style="background:var(--teal-xl);border:1.5px solid var(--teal);border-radius:var(--r-md);padding:.9rem 1rem;margin-bottom:1.2rem;text-align:center">
-          <strong style="color:var(--teal-d);font-size:.95rem" id="conf-employé-email">—</strong>
+          <strong style="color:var(--teal-d);font-size:.95rem" id="conf-patient-email">—</strong>
         </div>
 
         <!-- Message étapes -->
@@ -1802,7 +1802,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
           </div>
         </div>
 
-        <div class="ep-body" id="conf-employé-body" style="display:none"></div>
+        <div class="ep-body" id="conf-patient-body" style="display:none"></div>
         <button class="btn-submit" onclick="goHome()">🔍 Trouver un spécialiste</button>
       </div>
     </div>
@@ -1883,7 +1883,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
 </style>
 
 <!-- ══ VIEW: employé SPACE ══ -->
-<div class="view" id="v-employé">
+<div class="view" id="v-patient">
   <div class="employé-wrap">
     <div class="pat-hdr">
       <div id="pat-av-display" style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--blue-l),var(--blue));display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;overflow:hidden;border:2px solid var(--border)">👤</div>
@@ -2358,7 +2358,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
             <div style="display:flex;gap:.5rem;flex-wrap:wrap">
               <button onclick="copyMeetLink()" style="background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:.42rem .85rem;font-size:.76rem;font-weight:600;cursor:pointer">📋 Copier</button>
               <button onclick="openMeetLink()" style="background:#fff;color:#1B6B61;border:none;border-radius:8px;padding:.42rem .85rem;font-size:.76rem;font-weight:600;cursor:pointer">📹 Rejoindre</button>
-              <button onclick="shareMeetWithemployé()" style="background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:.42rem .85rem;font-size:.76rem;font-weight:600;cursor:pointer">📧 Envoyer au employé</button>
+              <button onclick="shareMeetWithPatient()" style="background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:.42rem .85rem;font-size:.76rem;font-weight:600;cursor:pointer">📧 Envoyer au employé</button>
             </div>
           </div>
         </div>
@@ -2713,7 +2713,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
       <div class="slots-wrap" id="slots-wrap"></div>
       <div id="bs-dual-time" style="display:none;background:linear-gradient(135deg,var(--teal-xl),#E8F4F2);border:1px solid var(--teal);border-radius:8px;padding:.5rem .8rem;font-size:.78rem;color:var(--teal-d);margin-bottom:.6rem;line-height:1.6"></div>
       <div class="bsheet-foot">
-        <button class="btn-next" onclick="fillemployéForm();goStep(2)" id="btn-step2" disabled>Continuer →</button>
+        <button class="btn-next" onclick="fillPatientForm();goStep(2)" id="btn-step2" disabled>Continuer →</button>
       </div>
     </div>
     <!-- Step 2: employé info — auto-rempli depuis le compte -->
@@ -2765,7 +2765,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
         <button class="btn-submit" onclick="closeBSheet();goPayment()" style="margin-bottom:.5rem">
           💳 Confirmer avec 1 crédit maintenant
         </button>
-        <button onclick="closeBSheet();goemployé()" style="width:100%;background:var(--sand);color:var(--mid);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:.65rem;font-size:.82rem;font-weight:500;cursor:pointer;margin-bottom:.4rem">
+        <button onclick="closeBSheet();goPatient()" style="width:100%;background:var(--sand);color:var(--mid);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:.65rem;font-size:.82rem;font-weight:500;cursor:pointer;margin-bottom:.4rem">
           👤 Payer plus tard (Mon espace employé)
         </button>
         <button style="background:none;border:none;color:var(--soft);font-size:.75rem;cursor:pointer" onclick="closeBSheet()">Fermer</button>
@@ -2890,9 +2890,9 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
     </div>
 
     <!-- Tab: employés -->
-    <div class="adm-pane" id="adm-employés-admin">
+    <div class="adm-pane" id="adm-users-admin">
       <h3 style="font-family:'Cormorant Garamond',serif;font-size:.95rem;font-weight:700;color:var(--ch);margin-bottom:.8rem">👤 employés inscrits</h3>
-      <div id="adm-employés-list"></div>
+      <div id="adm-users-list"></div>
     </div>
 
     <!-- Tab: Pros actifs -->
@@ -3343,7 +3343,7 @@ function resetDatabase(){
 //  STATE
 // ================================================
 let selSpec=null,selDate=null,selSlot=null,selType='video';
-let cY,cM,currentLoginTab='employé';
+let cY,cM,currentLoginTab='patient';
 const now=new Date();cY=now.getFullYear();cM=now.getMonth();
 const MONTHS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 const DAYS_SHORT=['L','M','M','J','V','S','D'];
@@ -3426,9 +3426,9 @@ function applySession(session){
   document.getElementById('nav-notif-btn').style.display='block';
   if(session.type==='admin'){
     document.getElementById('dr-admin').style.display='block';
-  } else if(session.type==='employé'){
-    document.getElementById('dr-employé').style.display='block';
-    document.getElementById('dr-employé-name').textContent=session.name||session.email;
+  } else if(session.type==='patient'){
+    document.getElementById('dr-patient').style.display='block';
+    document.getElementById('dr-patient-name').textContent=session.name||session.email;
   } else {
     document.getElementById('dr-pro').style.display='block';
     document.getElementById('dr-pro-name').textContent='Dr. '+(session.ln||'');
@@ -3454,7 +3454,7 @@ function goHome(){showView('v-home');renderHome()}
 function scrollToSearch(){document.getElementById('search-anchor').scrollIntoView({behavior:'smooth'})}
 function showLogin(){showView('v-login');document.getElementById('login-error').style.display='none';backToLoginStep1();setTimeout(showRecaptchaNotice,100);}
 function showSignup(type){
-  showView(type==='pro'?'v-signup-pro':'v-signup-employé');
+  showView(type==='pro'?'v-signup-pro':'v-signup-patient');
   if(type==='pro'){
     // Attacher les listeners pour preview spécialités
     setTimeout(()=>{
@@ -3480,13 +3480,13 @@ async function goPro(){
   try{await sbLoadRdvs();}catch(e){console.warn('goPro sync:',e);}
   updateProDashboard(s);
 }
-async function goemployé(){
+async function goPatient(){
   const s=getSession();
-  if(!s||s.type!=='employé'){showLogin();return}
-  showView('v-employé');
+  if(!s||s.type!=='patient'){showLogin();return}
+  showView('v-patient');
   // Sync RDVs depuis Supabase
-  try{await sbLoadRdvs();}catch(e){console.warn('goemployé sync:',e);}
-  updateemployéDash(s);
+  try{await sbLoadRdvs();}catch(e){console.warn('goPatient sync:',e);}
+  updatePatientDash(s);
   setTimeout(renderPatConfirmations,100);
 }
 
@@ -3502,7 +3502,7 @@ function renderHome(){
     const searchWrap=document.querySelector('.search-wrap');
 
     // ── MUR D'INSCRIPTION si non connecté ──
-    if(!session || (session.type!=='employé' && session.type!=='pro' && session.type!=='admin')){
+    if(!session || (session.type!=='patient' && session.type!=='pro' && session.type!=='admin')){
       if(cnt)cnt.style.display='none';
       if(searchWrap)searchWrap.style.display='none';
       if(!list)return;
@@ -3539,7 +3539,7 @@ function renderHome(){
                   <strong style="color:#1B6B61">${nb} spécialiste${nb>1?'s':''} certifié${nb>1?'s':''}</strong> disponible${nb>1?'s':''} sur Psycholab.<br/>
                   Créez un compte gratuit pour accéder aux profils et prendre rendez-vous.
                 </div>
-                <button onclick="showSignup('employé')" style="background:linear-gradient(135deg,#1B6B61,#2A8A7E);color:#fff;border:none;border-radius:12px;padding:.85rem;font-size:.9rem;font-weight:700;cursor:pointer;width:100%;margin-bottom:.55rem;box-shadow:0 4px 16px rgba(27,107,97,.35)">
+                <button onclick="showSignup('patient')" style="background:linear-gradient(135deg,#1B6B61,#2A8A7E);color:#fff;border:none;border-radius:12px;padding:.85rem;font-size:.9rem;font-weight:700;cursor:pointer;width:100%;margin-bottom:.55rem;box-shadow:0 4px 16px rgba(27,107,97,.35)">
                   👤 Créer mon compte gratuit
                 </button>
                 <button onclick="showLogin()" style="background:transparent;color:#1B6B61;border:1.5px solid #1B6B61;border-radius:12px;padding:.75rem;font-size:.85rem;font-weight:600;cursor:pointer;width:100%;margin-bottom:.8rem">
@@ -3576,7 +3576,7 @@ function renderHome(){
             </div>
           </div>
 
-          <button onclick="showSignup('employé')" style="background:linear-gradient(135deg,#1B6B61,#2A8A7E);color:#fff;border:none;border-radius:14px;padding:1rem;font-size:.95rem;font-weight:800;cursor:pointer;width:100%;box-shadow:0 4px 20px rgba(27,107,97,.3)">
+          <button onclick="showSignup('patient')" style="background:linear-gradient(135deg,#1B6B61,#2A8A7E);color:#fff;border:none;border-radius:14px;padding:1rem;font-size:.95rem;font-weight:800;cursor:pointer;width:100%;box-shadow:0 4px 20px rgba(27,107,97,.3)">
             👤 Je m'inscris maintenant — C'est gratuit
           </button>
         </div>`;
@@ -3688,7 +3688,7 @@ async function consumeConfirmToken(token){
     try{
       const{data,error}=await supa.from('users').select('id,email,fn,ln,tel,tz').eq('confirm_token',token).maybeSingle();
       if(!error&&data){
-        entry={id:data.id,type:'employé',email:data.email,expiry:Date.now()+1000};
+        entry={id:data.id,type:'patient',email:data.email,expiry:Date.now()+1000};
         // Marquer confirmé dans Supabase immédiatement
         await supa.from('users').update({email_confirmed:true,confirm_token:null}).eq('id',data.id);
       }
@@ -3703,17 +3703,17 @@ async function consumeConfirmToken(token){
   localStorage.setItem('plConfirmTokens',JSON.stringify(tokens));
 
   const db=getDB();
-  if(entry.type==='employé'){
+  if(entry.type==='patient'){
     const user=db.users.find(u=>u.id===entry.id);
     if(!user){toast('Compte introuvable.','red');return;}
     user.emailConfirmed=true;
     saveDB(db);
     // Connexion automatique après confirmation
-    saveSession({id:user.id,type:'employé',email:user.email,name:user.fn+' '+user.ln,fn:user.fn,ln:user.ln,tel:user.tel,tz:user.tz});
+    saveSession({id:user.id,type:'patient',email:user.email,name:user.fn+' '+user.ln,fn:user.fn,ln:user.ln,tel:user.tel,tz:user.tz});
     applySession(getSession());
-    addNotif(user.id,'employé','🎉 Bienvenue sur Psycholab !','Votre adresse email est confirmée. Vous pouvez maintenant prendre vos rendez-vous.');
+    addNotif(user.id,'patient','🎉 Bienvenue sur Psycholab !','Votre adresse email est confirmée. Vous pouvez maintenant prendre vos rendez-vous.');
     toast('✅ Email confirmé ! Bienvenue '+user.fn+' !','green');
-    goemployé();
+    goPatient();
   } else if(entry.type==='pro'){
     const pro=db.pros.find(p=>p.id===entry.id);
     if(!pro){toast('Compte introuvable.','red');return;}
@@ -3739,7 +3739,7 @@ function checkConfirmTokenOnLoad(){
 // ================================================
 let captchaAnswer=0;
 let magicToken=null;
-let magicLoginType='employé';
+let magicLoginType='patient';
 let magicLoginEmail='';
 
 function refreshCaptcha(){
@@ -3761,7 +3761,7 @@ function refreshCaptcha(){
 function switchLoginTab(type){
   currentLoginTab=type;
   magicLoginType=type;
-  document.getElementById('ltab-pat').classList.toggle('on',type==='employé');
+  document.getElementById('ltab-pat').classList.toggle('on',type==='patient');
   document.getElementById('ltab-pro').classList.toggle('on',type==='pro');
   backToLoginStep1();
 }
@@ -3809,7 +3809,7 @@ async function doRequestMagicLink(){
   // Vérifier que l'email existe selon le type
   const db=getDB();
   // Admin seulement si on est sur l'onglet "Professionnel" (pas employé)
-  const isAdmin=(email===ADMIN_EMAIL && currentLoginTab!=='employé');
+  const isAdmin=(email===ADMIN_EMAIL && currentLoginTab!=='patient');
 
   // ADMIN — connexion directe sans lien magique
   if(isAdmin){
@@ -3849,7 +3849,7 @@ async function doRequestMagicLink(){
   }
 
   // employé / PRO — vérifier compte (local + Supabase)
-  if(currentLoginTab==='employé'){
+  if(currentLoginTab==='patient'){
     const user=db.users.find(u=>u.email===email);
     if(!user){
       // Chercher dans Supabase
@@ -3867,7 +3867,7 @@ async function doRequestMagicLink(){
               if(existing>=0)db3.users[existing]={...db3.users[existing],...syncedUser};
               else db3.users.push(syncedUser);
               saveDB(db3);
-              proceedWithMagicLink(email,'employé',btn,errEl);
+              proceedWithMagicLink(email,'patient',btn,errEl);
             } else {
               errEl.innerHTML='⚠️ Aucun compte employé trouvé pour cet email.<br/><a onclick="showSignup(\'employé\')" style="color:var(--teal);font-weight:600;cursor:pointer">Créer un compte →</a>';
               errEl.style.display='block';
@@ -3879,7 +3879,7 @@ async function doRequestMagicLink(){
             if(btn){btn.disabled=false;btn.textContent='📧 Envoyer mon lien de connexion';}
           });
         } else {
-          proceedWithMagicLink(email,'employé',btn,errEl);
+          proceedWithMagicLink(email,'patient',btn,errEl);
         }
       });
       return;
@@ -4081,7 +4081,7 @@ function consumeMagicToken(token){
     toast('✅ Bienvenue Administrateur Psycholab','green');
     goAdmin();return;
   }
-  if(type==='employé'){
+  if(type==='patient'){
     // Sync depuis Supabase d'abord
     sbLoadUsers().then(()=>{
       const db2=getDB();
@@ -4094,10 +4094,10 @@ function consumeMagicToken(token){
             const u={id:data.id,fn:data.fn,ln:data.ln,email:data.email,tel:data.tel||'',
               tz:data.tz||'Europe/Paris',emailConfirmed:true,createdAt:data.created_at||new Date().toISOString()};
             db3.users.push(u);saveDB(db3);
-            saveSession({id:u.id,type:'employé',email:u.email,fn:u.fn,ln:u.ln,tel:u.tel,tz:u.tz});
+            saveSession({id:u.id,type:'patient',email:u.email,fn:u.fn,ln:u.ln,tel:u.tel,tz:u.tz});
             applySession(getSession());
             toast('✅ Bienvenue '+u.fn+' !','green');
-            goemployé();
+            goPatient();
           } else {
             toast('⚠️ Compte introuvable. Créez un compte employé.','red');
             showView('v-login');
@@ -4106,18 +4106,18 @@ function consumeMagicToken(token){
         return;
       }
       if(user.emailConfirmed===false){user.emailConfirmed=true;saveDB(db2);}
-      saveSession({id:user.id,type:'employé',email:user.email,name:user.fn+' '+user.ln,fn:user.fn,ln:user.ln,tel:user.tel,tz:user.tz});
+      saveSession({id:user.id,type:'patient',email:user.email,name:user.fn+' '+user.ln,fn:user.fn,ln:user.ln,tel:user.tel,tz:user.tz});
       applySession(getSession());
       toast('✅ Bienvenue '+user.fn+' !','green');
-      goemployé();
+      goPatient();
     }).catch(()=>{
       const db2=getDB();
       const user=db2.users.find(u=>u.email===email);
       if(!user){toast('⚠️ Compte introuvable. Créez un compte.','red');showView('v-login');return;}
-      saveSession({id:user.id,type:'employé',email:user.email,name:user.fn+' '+user.ln,fn:user.fn,ln:user.ln,tel:user.tel,tz:user.tz});
+      saveSession({id:user.id,type:'patient',email:user.email,name:user.fn+' '+user.ln,fn:user.fn,ln:user.ln,tel:user.tel,tz:user.tz});
       applySession(getSession());
       toast('✅ Bienvenue '+user.fn+' !','green');
-      goemployé();
+      goPatient();
     });
     return;
   }
@@ -4484,7 +4484,7 @@ function toggleAnonMode(val){
   }
 }
 
-async function doSignupemployé(){
+async function doSignupPatient(){
   clearAllErrors('spat');
   const anonMode=document.querySelector('input[name="spat-anon"]:checked')?.value||'real';
   const email=document.getElementById('spat-email').value.trim();
@@ -4517,7 +4517,7 @@ async function doSignupemployé(){
   if(hasError)return;
 
   // reCAPTCHA v3 + rate limiting
-  const submitBtn=document.querySelector('#v-signup-employé .btn-submit');
+  const submitBtn=document.querySelector('#v-signup-patient .btn-submit');
   if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='🔒 Vérification…';}
   const check=await verifyHuman(email,'signup_employé');
   if(!check.ok){
@@ -4549,7 +4549,7 @@ async function doSignupemployé(){
   // Générer token de confirmation d'inscription
   const confirmToken='conf_'+Math.random().toString(36).slice(2)+Date.now().toString(36);
   const tokens=JSON.parse(localStorage.getItem('plConfirmTokens')||'{}');
-  tokens[confirmToken]={id,type:'employé',email,expiry:Date.now()+48*60*60*1000};
+  tokens[confirmToken]={id,type:'patient',email,expiry:Date.now()+48*60*60*1000};
   localStorage.setItem('plConfirmTokens',JSON.stringify(tokens));
   // Stocker aussi dans l'objet user pour Supabase (cross-device)
   user.confirmToken=confirmToken;
@@ -4567,16 +4567,16 @@ async function doSignupemployé(){
   });
 
   // Afficher page de succès avec instruction email
-  document.getElementById('conf-employé-email').textContent=email;
+  document.getElementById('conf-patient-email').textContent=email;
   // Message de succès employé
-  const confBody=document.getElementById('conf-employé-body');
+  const confBody=document.getElementById('conf-patient-body');
   if(confBody)confBody.innerHTML=`<div style="font-size:.82rem;line-height:1.9;color:var(--mid)">
     <strong>1.</strong> Ouvrez votre boîte email<br/>
     <strong>2.</strong> Cliquez sur le lien de confirmation Psycholab<br/>
     <strong>3.</strong> Votre compte sera activé immédiatement<br/>
     <div style="margin-top:.5rem;font-size:.73rem;color:var(--soft)">⏱️ Lien valable 48h · Vérifiez vos spams si besoin</div>
   </div>`;
-  showView('v-success-employé');
+  showView('v-success-patient');
 }
 
 // ================================================
@@ -4815,7 +4815,7 @@ function activateProDemo(){
 function doLogout(){
   clearSession();
   document.getElementById('dr-loggedout').style.display='block';
-  document.getElementById('dr-employé').style.display='none';
+  document.getElementById('dr-patient').style.display='none';
   document.getElementById('dr-pro').style.display='none';
   document.getElementById('dr-admin').style.display='none';
   document.getElementById('nav-notif-btn').style.display='none';
@@ -5233,7 +5233,7 @@ function openNotifs(){
   const s=getSession();
   if(!s)return;
   if(s.type==='pro'){goPro();setTimeout(()=>showDash('notifs',document.querySelectorAll('.ptab')[3]),100);}
-  else{goemployé();setTimeout(()=>showPatDash('notifs',null),100);}
+  else{goPatient();setTimeout(()=>showPatDash('notifs',null),100);}
 }
 
 function renderNotifs(userId,containerId){
@@ -5379,7 +5379,7 @@ function renderRDVList(pro,db,filter='all'){
         ${r.status==='confirmed'?`
           <button onclick="addProToGoogleCalendar(${JSON.stringify(r).replace(/"/g,'&quot;')})" style="background:var(--blue-l);color:var(--blue);border:1.5px solid var(--blue);border-radius:8px;padding:.45rem .85rem;font-size:.76rem;font-weight:600;cursor:pointer">📅 Google Agenda</button>
           ${isVideo?`<button onclick="showDash('video',document.querySelectorAll('.ptab')[5])" style="background:var(--teal-xl);color:var(--teal-d);border:1.5px solid var(--teal);border-radius:8px;padding:.45rem .85rem;font-size:.76rem;font-weight:600;cursor:pointer">📹 Lien Meet</button>`:''}
-          ${new Date(r.date+'T'+(r.slot||'00:00'))<=new Date()&&!r.absenceStatus?`<button onclick="signalerAbsenceemployé('${r.id}')" style="background:var(--orange-l);color:var(--orange);border:1.5px solid var(--orange);border-radius:8px;padding:.45rem .8rem;font-size:.76rem;font-weight:600;cursor:pointer">👤 employé absent</button>`:''}
+          ${new Date(r.date+'T'+(r.slot||'00:00'))<=new Date()&&!r.absenceStatus?`<button onclick="signalerAbsencePatient('${r.id}')" style="background:var(--orange-l);color:var(--orange);border:1.5px solid var(--orange);border-radius:8px;padding:.45rem .8rem;font-size:.76rem;font-weight:600;cursor:pointer">👤 employé absent</button>`:''}
           ${r.absenceStatus==='pat_absent_credit'?`<span style="background:var(--orange-l);color:var(--orange);border:1px solid var(--orange);border-radius:8px;padding:.4rem .7rem;font-size:.72rem;font-weight:600">⚠️ 1ère absence employé</span>`:''}
           ${r.absenceStatus==='pat_absent_lost'?`<span style="background:#FFF5F5;color:var(--red);border:1px solid var(--red);border-radius:8px;padding:.4rem .7rem;font-size:.72rem;font-weight:600">❌ Absence — séance perdue</span>`:''}
           <button onclick="actRDVPro('${r.id}','cancelled','${pro.id}')" style="background:var(--red-l);color:var(--red);border:1.5px solid var(--red);border-radius:8px;padding:.45rem .8rem;font-size:.76rem;font-weight:600;cursor:pointer">Annuler</button>`:''}
@@ -5399,7 +5399,7 @@ function actRDVPro(rdvId,status,proId){
   if(pro){renderRDVList(pro,db);updateProDashboard(s);}
   if(status==='confirmed'){
     toast('✅ RDV confirmé ! Email envoyé au employé','green');
-    if(rdv.patId) addNotif(rdv.patId,'employé','✅ RDV confirmé par Dr. '+rdv.proLn,'Votre rendez-vous du '+formatDate(rdv.date)+' à '+rdv.slot+' a été confirmé. Vous recevrez des rappels 24h et 2h avant.');
+    if(rdv.patId) addNotif(rdv.patId,'patient','✅ RDV confirmé par Dr. '+rdv.proLn,'Votre rendez-vous du '+formatDate(rdv.date)+' à '+rdv.slot+' a été confirmé. Vous recevrez des rappels 24h et 2h avant.');
     sendEmailNotification({
       _subject:'✅ Votre RDV est confirmé -- Dr. '+rdv.proFn+' '+rdv.proLn+' · '+new Date(rdv.date).toLocaleDateString('fr-FR'),
       type:'CONFIRMATION_RDV_PAR_SPECIALISTE',
@@ -5414,7 +5414,7 @@ function actRDVPro(rdvId,status,proId){
     sendReminderEmails(rdv);
   } else {
     toast('❌ RDV refusé -- employé notifié','red');
-    if(rdv.patId) addNotif(rdv.patId,'employé','❌ RDV refusé','Votre rendez-vous du '+formatDate(rdv.date)+' a été refusé par le spécialiste. Vous pouvez prendre un nouveau rendez-vous.');
+    if(rdv.patId) addNotif(rdv.patId,'patient','❌ RDV refusé','Votre rendez-vous du '+formatDate(rdv.date)+' a été refusé par le spécialiste. Vous pouvez prendre un nouveau rendez-vous.');
     sendEmailNotification({
       _subject:'❌ RDV non disponible -- '+new Date(rdv.date).toLocaleDateString('fr-FR'),
       type:'REFUS_RDV_PAR_SPECIALISTE',
@@ -5450,7 +5450,7 @@ function actRDV(rdvId,status,proId){
   if(status==='confirmed'){
     toast('✅ RDV confirmé -- Email + Google Calendar envoyés','green');
     // Notification interne employé
-    if(rdv.patId) addNotif(rdv.patId,'employé','✅ RDV confirmé !','Votre rendez-vous avec Dr. '+rdv.proFn+' '+rdv.proLn+' le '+formatDate(rdv.date)+' à '+rdv.slot+' est confirmé.');
+    if(rdv.patId) addNotif(rdv.patId,'patient','✅ RDV confirmé !','Votre rendez-vous avec Dr. '+rdv.proFn+' '+rdv.proLn+' le '+formatDate(rdv.date)+' à '+rdv.slot+' est confirmé.');
     // Email confirmation au employé via Formspree
     sendEmailNotification({
       _subject:'✅ RDV confirmé -- Dr. '+rdv.proFn+' '+rdv.proLn+' le '+new Date(rdv.date).toLocaleDateString('fr-FR'),
@@ -5470,7 +5470,7 @@ function actRDV(rdvId,status,proId){
     renderRDVListWithCalendar(pro,db);
   } else {
     toast('❌ RDV refusé/annulé -- employé notifié','red');
-    if(rdv.patId) addNotif(rdv.patId,'employé','❌ RDV annulé','Votre rendez-vous du '+formatDate(rdv.date)+' à '+rdv.slot+' a été annulé.');
+    if(rdv.patId) addNotif(rdv.patId,'patient','❌ RDV annulé','Votre rendez-vous du '+formatDate(rdv.date)+' à '+rdv.slot+' a été annulé.');
     sendEmailNotification({
       _subject:'❌ RDV annulé -- '+new Date(rdv.date).toLocaleDateString('fr-FR')+' à '+rdv.slot,
       type:'ANNULATION_RDV',
@@ -5693,7 +5693,7 @@ function showPatDash(id,btn){
   if(id==='messages'&&s)renderPatMessages();
 }
 
-function updateemployéDash(session){
+function updatePatientDash(session){
   const db=getDB();
   const user=db.users.find(u=>u.id===session.id);
   if(!user)return;
@@ -5756,7 +5756,7 @@ function updateemployéDash(session){
         </div>
         <div style="background:var(--sand);border-radius:var(--r-sm);padding:.5rem .75rem;font-size:.74rem;color:var(--mid);margin-bottom:.6rem">ℹ️ ${st.sub}</div>
         ${r.status==='awaiting_payment'?`
-          <button onclick="goPaymentFromemployé('${r.id}')" style="width:100%;background:linear-gradient(135deg,var(--teal-d),var(--teal));color:#fff;border:none;border-radius:var(--r-sm);padding:.65rem;font-size:.82rem;font-weight:700;cursor:pointer;margin-bottom:.4rem">💳 Confirmer avec 1 crédit</button>`:''}
+          <button onclick="goPaymentFromPatient('${r.id}')" style="width:100%;background:linear-gradient(135deg,var(--teal-d),var(--teal));color:#fff;border:none;border-radius:var(--r-sm);padding:.65rem;font-size:.82rem;font-weight:700;cursor:pointer;margin-bottom:.4rem">💳 Confirmer avec 1 crédit</button>`:''}
         ${r.status==='confirmed'?`
           <div style="display:flex;gap:.4rem;flex-wrap:wrap">
             <button onclick="addToGoogleCalendar(${JSON.stringify(r).replace(/"/g,'&quot;')})" style="flex:1;background:#4285F4;color:#fff;border:none;border-radius:var(--r-sm);padding:.52rem;font-size:.76rem;font-weight:600;cursor:pointer;min-width:100px">📅 Calendar</button>
@@ -5780,7 +5780,7 @@ function updateemployéDash(session){
       return `<div class="rdv-item done">
         <div class="rdv-head">
           <div class="rdv-date"><div class="rdv-d">${d.getDate()}</div><div class="rdv-m">${MONTHS[d.getMonth()].slice(0,3)}</div></div>
-          <div><div class="rdv-employé">Dr. ${escHtml(r.proFn)} ${escHtml(r.proLn)} ${absLabel}</div><div class="rdv-meta">${r.spec} · ${r.slot}</div></div>
+          <div><div class="rdv-patient">Dr. ${escHtml(r.proFn)} ${escHtml(r.proLn)} ${absLabel}</div><div class="rdv-meta">${r.spec} · ${r.slot}</div></div>
         </div>
         <span class="status-badge done">✓ Passé</span>
       </div>`;
@@ -5828,7 +5828,7 @@ const COUNTRY_TZ_MAP={
   '+81':'Asia/Tokyo','+82':'Asia/Seoul','+86':'Asia/Shanghai',
 };
 
-function getemployéTZ(){
+function getPatientTZ(){
   const s=getSession();
   if(s&&s.tz&&s.tz!=='Europe/Paris') return s.tz;
   // Déduire depuis indicatif téléphone si disponible
@@ -5846,7 +5846,7 @@ function getemployéTZ(){
 
 function formatDualTime(dateStr, slot){
   const TUNIS_TZ='Europe/Paris';
-  const employéTZ=getemployéTZ();
+  const employéTZ=getPatientTZ();
   // Construire la date avec le slot
   if(!dateStr||!slot) return '';
   const [h,m]=(slot||'00:00').split(':').map(Number);
@@ -6047,7 +6047,7 @@ function showSignupWall(){
       <div style="font-size:.82rem;color:#6B8C87;line-height:1.6;margin-bottom:1.3rem">
         Pour voir les profils complets et réserver une séance, connectez-vous avec votre invitation entreprise.
       </div>
-      <button onclick="document.getElementById('signup-wall-modal').remove();showSignup('employé')"
+      <button onclick="document.getElementById('signup-wall-modal').remove();showSignup('patient')"
         style="background:linear-gradient(135deg,#1B6B61,#2A8A7E);color:#fff;border:none;border-radius:13px;padding:.9rem;font-size:.92rem;font-weight:800;cursor:pointer;width:100%;margin-bottom:.6rem;box-shadow:0 4px 16px rgba(27,107,97,.35)">
         👤 Créer mon compte — Gratuit
       </button>
@@ -6157,7 +6157,7 @@ function openProProfile(proId){
           <div style="font-size:.78rem;color:var(--ch)"><span style="color:var(--soft)">💶 Tarif</span><br/><strong>38 € / séance</strong></div>
           <div style="font-size:.78rem;color:var(--ch)"><span style="color:var(--soft)">⏱️ Durée</span><br/><strong>45 minutes</strong></div>
           <div style="font-size:.78rem;color:var(--ch)"><span style="color:var(--soft)">📹 Format</span><br/><strong>Vidéo (Google Meet)</strong></div>
-          <div style="font-size:.78rem;color:var(--ch);grid-column:1/-1"><span style="color:var(--soft)">🌍 Fuseau horaire</span><br/><strong style="color:var(--teal-d)">🇹🇳 Tunisie (UTC+1)</strong>${getemployéTZ()!=='Europe/Paris'?'<br/><span style="color:var(--mid);font-size:.73rem">Votre heure : <strong>'+new Intl.DateTimeFormat('fr-FR',{timeZone:getemployéTZ(),hour:'2-digit',minute:'2-digit'}).format(new Date())+'</strong> ('+getemployéTZ().split('/').pop().replace('_',' ')+')</span>':''}</div>
+          <div style="font-size:.78rem;color:var(--ch);grid-column:1/-1"><span style="color:var(--soft)">🌍 Fuseau horaire</span><br/><strong style="color:var(--teal-d)">🇹🇳 Tunisie (UTC+1)</strong>${getPatientTZ()!=='Europe/Paris'?'<br/><span style="color:var(--mid);font-size:.73rem">Votre heure : <strong>'+new Intl.DateTimeFormat('fr-FR',{timeZone:getPatientTZ(),hour:'2-digit',minute:'2-digit'}).format(new Date())+'</strong> ('+getPatientTZ().split('/').pop().replace('_',' ')+')</span>':''}</div>
         </div>
       </div>
 
@@ -6165,7 +6165,7 @@ function openProProfile(proId){
       <button onclick="handleProfileRDV('${pro.id}')" style="background:var(--teal-d);color:#fff;border:none;border-radius:14px;padding:1rem;font-size:.95rem;font-weight:800;cursor:pointer;width:100%;letter-spacing:.01em;margin-top:.2rem">
         📅 Prendre rendez-vous avec ${getProTitle(pro.spec)}${escHtml(pro.fn)} ${escHtml(pro.ln)}
       </button>
-      ${(!getSession()||getSession().type==='visitor')?`<div style="text-align:center;font-size:.74rem;color:var(--soft);margin-top:.4rem">🔒 Un compte gratuit est requis pour réserver — <span onclick="closeProProfile();showSignup('employé')" style="color:var(--teal);font-weight:700;cursor:pointer">Créer mon compte</span></div>`:''}
+      ${(!getSession()||getSession().type==='visitor')?`<div style="text-align:center;font-size:.74rem;color:var(--soft);margin-top:.4rem">🔒 Un compte gratuit est requis pour réserver — <span onclick="closeProProfile();showSignup('patient')" style="color:var(--teal);font-weight:700;cursor:pointer">Créer mon compte</span></div>`:''}
       <button onclick="closeProProfile()" style="background:transparent;color:var(--soft);border:1.5px solid var(--border);border-radius:14px;padding:.7rem;font-size:.82rem;font-weight:600;cursor:pointer;width:100%">← Retour aux spécialistes</button>
     </div>
   `;
@@ -6230,7 +6230,7 @@ function directBooking(proId){
   
   // 2. Vérifier session
   const sess=getSession();
-  if(!sess || (sess.type!=='employé' && sess.type!=='admin' && sess.type!=='pro')){
+  if(!sess || (sess.type!=='patient' && sess.type!=='admin' && sess.type!=='pro')){
     // Pas connecté - montrer le mur SANS blur
     const old=document.getElementById('signup-wall-modal');
     if(old)old.remove();
@@ -6241,7 +6241,7 @@ function directBooking(proId){
       <div style="font-size:2.2rem;margin-bottom:.6rem">🔒</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:#1B3A35;margin-bottom:.5rem">Connexion requise</div>
       <div style="font-size:.82rem;color:#6B8C87;line-height:1.6;margin-bottom:1.2rem">Créez un compte gratuit pour prendre rendez-vous avec ce spécialiste.</div>
-      <button onclick="document.getElementById('signup-wall-modal').remove();document.body.style.overflow='';showSignup('employé')"
+      <button onclick="document.getElementById('signup-wall-modal').remove();document.body.style.overflow='';showSignup('patient')"
         style="background:linear-gradient(135deg,#1B6B61,#2A8A7E);color:#fff;border:none;border-radius:12px;padding:.9rem;font-size:.9rem;font-weight:800;cursor:pointer;width:100%;margin-bottom:.55rem">
         👤 Créer mon compte gratuit
       </button>
@@ -6262,7 +6262,7 @@ function directBooking(proId){
 function openSheet(proId){
   // Guard: doit être connecté
   const sess=getSession();
-  if(!sess || (sess.type!=='employé' && sess.type!=='admin' && sess.type!=='pro')){
+  if(!sess || (sess.type!=='patient' && sess.type!=='admin' && sess.type!=='pro')){
     showSignupWall();
     return;
   }
@@ -6292,7 +6292,7 @@ function openSheet(proId){
   document.getElementById('tv').classList.add('on');
   document.getElementById('tpr').classList.remove('on');
   goStep(1);
-  fillemployéForm();
+  fillPatientForm();
 
   // ─── STRATÉGIE MULTI-COUCHES pour garantir l'affichage du calendrier ───
   // Couche 1 : rendu immédiat
@@ -6387,19 +6387,19 @@ function goStep(n){
   });
 }
 
-function fillemployéForm(){
+function fillPatientForm(){
   const s=getSession();
   const loggedDiv=document.getElementById('bs-logged-info');
   const guestDiv=document.getElementById('bs-guest-form');
 
-  if(s&&(s.type==='employé'||s.type==='admin'||s.type==='pro')){
+  if(s&&(s.type==='patient'||s.type==='admin'||s.type==='pro')){
     loggedDiv.style.display='block';
     guestDiv.style.display='none';
 
     const db=getDB();
     let fn=s.fn||'',ln=s.ln||'',email=s.email||'',tel=s.tel||'',dob='',photo='',anonMode='real';
 
-    if(s.type==='employé'){
+    if(s.type==='patient'){
       const user=db.users.find(u=>u.id===s.id);
       if(user){fn=user.fn||fn;ln=user.ln||ln;email=user.email||email;tel=user.tel||tel;dob=user.dob||'';photo=user.photo||'';anonMode=user.anonMode||'real';}
     }
@@ -6502,17 +6502,17 @@ function confirmRDV(){
   const s=getSession();
   let patFn,patLn,patEmail,patId=null;
 
-  if(s && s.type && ['employé','admin','pro'].indexOf(s.type)>=0){
+  if(s && s.type && ['patient','admin','pro'].indexOf(s.type)>=0){
     // Connecté — récupérer les infos de façon défensive
     try{
       var db2=getDB();
-      var user=(s.type==='employé'&&db2.users)?db2.users.filter(function(u){return u.id===s.id;})[0]:null;
-      patFn    = (user&&user.fn)   ? user.fn   : (s.fn||'employé');
+      var user=(s.type==='patient'&&db2.users)?db2.users.filter(function(u){return u.id===s.id;})[0]:null;
+      patFn    = (user&&user.fn)   ? user.fn   : (s.fn||'patient');
       patLn    = (user&&user.ln)   ? user.ln   : (s.ln||'');
       patEmail = (user&&user.email)? user.email: (s.email||'');
       patId    = s.id;
     }catch(e){
-      patFn=s.fn||'employé'; patLn=s.ln||''; patEmail=s.email||''; patId=s.id;
+      patFn=s.fn||'Employé'; patLn=s.ln||''; patEmail=s.email||''; patId=s.id;
     }
     if(!patEmail){
       toast('Email introuvable. Vérifiez votre profil.','red');return;
@@ -6542,7 +6542,7 @@ function confirmRDV(){
   try{saveDB(db);}catch(e){console.error('saveDB error:',e);}
   sbSaveRdv(rdv);
   // ── Notification employé uniquement (pas encore le pro) ──
-  if(patId) addNotif(patId,'employé','📋 RDV en attente de paiement',
+  if(patId) addNotif(patId,'patient','📋 RDV en attente de paiement',
     'Votre demande de RDV avec Dr. '+selSpec.fn+' '+selSpec.ln+' le '+formatDate(selDate.toISOString())+' à '+selSlot+
     ' est enregistrée. Procédez au paiement pour que votre demande soit transmise au spécialiste.');
   // ── Email à l'ADMIN pour suivi (pas au pro) ──
@@ -6804,7 +6804,7 @@ function sendReminderEmails(rdv){
       });
 
       // Notification in-app employé
-      addNotif(rdv.patId,'employé',
+      addNotif(rdv.patId,'patient',
         '🚀 Votre consultation commence dans 30 min !',
         'Dr. '+rdv.proLn+' vous attend à '+rdv.slot+'. Cliquez pour rejoindre la séance.'
       );
@@ -6950,7 +6950,7 @@ function confirmerReportRdv(rdvId,newDate,newSlot){
 
   fermerReportModal();
   toast('✅ RDV reporté au '+formatDate(newDate)+' à '+newSlot,'green');
-  goemployé();
+  goPatient();
 }
 
 function fermerReportModal(){
@@ -7027,8 +7027,8 @@ async function aiAsk(){
 // ================================================
 //  EMAIL GENERATION (Claude API)
 // ================================================
-async function generateemployéWelcomeEmail(fn,ln,email){
-  const el=document.getElementById('conf-employé-body');
+async function generatePatientWelcomeEmail(fn,ln,email){
+  const el=document.getElementById('conf-patient-body');
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
@@ -7149,7 +7149,7 @@ const PAY_INSTRUCTIONS={
     </div>`
 };
 
-function goPaymentFromemployé(rdvId){
+function goPaymentFromPatient(rdvId){
   const db=getDB();
   const rdv=db.rdvs.find(r=>r.id===rdvId);
   if(!rdv)return;
@@ -7166,7 +7166,7 @@ function goPaymentFromemployé(rdvId){
 }
 
 function goPayment(){
-  if(!currentPayRdv){toast('⚠️ Aucun rendez-vous trouvé','red');goemployé();return;}
+  if(!currentPayRdv){toast('⚠️ Aucun rendez-vous trouvé','red');goPatient();return;}
   document.getElementById('pay-amount').textContent=(selSpec.price?selSpec.price+'€':'Montant à définir');
   document.getElementById('pay-rdv-info').textContent='RDV avec Dr. '+selSpec.fn+' '+selSpec.ln+' · '+new Date(currentPayRdv.date).toLocaleDateString('fr-FR')+' à '+currentPayRdv.slot;
   document.getElementById('pay-date').value=new Date().toISOString().split('T')[0];
@@ -7314,7 +7314,7 @@ const COUNTRY_CURRENCY={
   '+1-CA':'CAD',
 };
 
-function getemployéCurrency(){
+function getPatientCurrency(){
   const s=getSession();
   if(!s) return 'EUR';
   const db=getDB();
@@ -7332,7 +7332,7 @@ function getemployéCurrency(){
 }
 
 function updatePayCurrencyDisplay(){
-  const currencyCode=getemployéCurrency();
+  const currencyCode=getPatientCurrency();
   const curr=CURRENCY_RATES[currencyCode];
   if(!curr||currencyCode==='EUR'){
     document.getElementById('pay-local-currency').style.display='none';
@@ -7591,7 +7591,7 @@ function submitPayment(){
     id:'pay_'+Date.now(),
     rdvId:currentPayRdv?currentPayRdv.id:null,
     patId:s?s.id:null,
-    patName:s?s.fn+' '+s.ln:'employé',
+    patName:s?s.fn+' '+s.ln:'Employé',
     patEmail:s?s.email:'',
     proId:currentPayRdv?currentPayRdv.proId:null,
     proName:currentPayRdv?'Dr. '+currentPayRdv.proFn+' '+currentPayRdv.proLn:'',
@@ -7622,7 +7622,7 @@ function submitPayment(){
     message:'Un employé a envoyé un justificatif de paiement. Connectez-vous au panel admin pour valider ou refuser ce paiement.'
   });
   // Notification interne
-  if(s)addNotif(s.id,'employé','💳 Justificatif envoyé','Votre justificatif de paiement a été transmis à l\'équipe Psycholab. Votre RDV sera confirmé sous 24h.');
+  if(s)addNotif(s.id,'patient','💳 Justificatif envoyé','Votre justificatif de paiement a été transmis à l\'équipe Psycholab. Votre RDV sera confirmé sous 24h.');
   // Mettre à jour le statut du RDV
   if(currentPayRdv){
     const rdv=db.rdvs.find(r=>r.id===currentPayRdv.id);
@@ -7635,7 +7635,7 @@ function submitPayment(){
   payFileData=null;
   _paymentSubmitting=false;
   toast('✅ Justificatif envoyé ! Votre RDV sera confirmé sous 24h.','green');
-  setTimeout(()=>goemployé(),2000);
+  setTimeout(()=>goPatient(),2000);
 }
 
 // ================================================
@@ -7648,7 +7648,7 @@ function showAdmTab(id,btn){
   if(btn)btn.classList.add('on');
   if(id==='paiements')renderAdmPaiements();
   if(id==='rdvs-admin')renderAdmRdvs();
-  if(id==='employés-admin')renderAdmemployés();
+  if(id==='employés-admin')renderAdmUsers();
   if(id==='pros-actifs'){
     // Resync depuis Supabase pour capturer les nouvelles inscriptions
     const pendEl=document.getElementById('adm-pending-list');
@@ -7983,7 +7983,7 @@ function showAdminProProfile(proId){
             </div>`).join('')}`:''}
 
           <!-- Bouton modifier coordonnées -->
-          <button onclick="modifierCoordemployé('${pat.id}')" style="width:100%;margin-top:.6rem;background:var(--sand);color:var(--ch);border:1.5px solid var(--border);border-radius:8px;padding:.5rem;font-size:.75rem;font-weight:600;cursor:pointer">✏️ Modifier les coordonnées</button>
+          <button onclick="modifierCoordPatient('${pat.id}')" style="width:100%;margin-top:.6rem;background:var(--sand);color:var(--ch);border:1.5px solid var(--border);border-radius:8px;padding:.5rem;font-size:.75rem;font-weight:600;cursor:pointer">✏️ Modifier les coordonnées</button>
         </div>`;
       }).join('');
     })()}
@@ -8251,7 +8251,7 @@ function deleteProAdmin(proId){
   renderHome();
 }
 
-function modifierCoordemployé(patId){
+function modifierCoordPatient(patId){
   const db=getDB();
   const user=db.users.find(u=>u.id===patId);
   if(!user){toast('employé introuvable','red');return;}
@@ -8359,7 +8359,7 @@ function validerPaiement(payId){
   saveDB(db);
 
   // -- Notifier le employé --
-  if(pay.patId) addNotif(pay.patId,'employé','💳 Paiement validé !',
+  if(pay.patId) addNotif(pay.patId,'patient','💳 Paiement validé !',
     'Votre paiement de '+pay.montant+'€ a été validé. '+
     'Votre demande est maintenant transmise au spécialiste pour confirmation du créneau.');
 
@@ -8413,7 +8413,7 @@ function refuserPaiement(payId){
   if(!pay)return;
   pay.statut='refuse';pay.updatedAt=new Date().toISOString();pay.raisonRefus=raison||'--';
   saveDB(db);
-  if(pay.patId)addNotif(pay.patId,'employé','❌ Paiement refusé','Votre justificatif n\'a pas pu être validé : '+(raison||'--')+'. Veuillez soumettre un nouveau justificatif.');
+  if(pay.patId)addNotif(pay.patId,'patient','❌ Paiement refusé','Votre justificatif n\'a pas pu être validé : '+(raison||'--')+'. Veuillez soumettre un nouveau justificatif.');
   sendEmailNotification({
     _subject:'❌ Justificatif de paiement non conforme -- Action requise',
     type:'PAIEMENT_REFUSE',
@@ -8445,10 +8445,10 @@ function renderAdmRdvs(){
   }).join('');
 }
 
-function renderAdmemployés(){
+function renderAdmUsers(){
   const db=getDB();
   const users=db.users||[];
-  const el=document.getElementById('adm-employés-list');
+  const el=document.getElementById('adm-users-list');
   if(!users.length){el.innerHTML=`<div class="empty-state"><div class="empty-ico">👤</div><h3 class="empty-title">Aucun employé</h3></div>`;return}
   el.innerHTML=users.map(u=>{
     const rdvCount=(db.rdvs||[]).filter(r=>r.patId===u.id).length;
@@ -8493,18 +8493,18 @@ function sendSecureMessage(){
   const msg={
     id:'msg_'+Date.now(),
     from:'pro',fromId:s.id,fromName:'Dr. '+pro.fn+' '+pro.ln,
-    to:'employé',toId:patId,toName:pat?pat.fn+' '+pat.ln:'employé',
+    to:'patient',toId:patId,toName:pat?pat.fn+' '+pat.ln:'Employé',
     subject,body,read:false,
     createdAt:new Date().toISOString()
   };
   db.messages.push(msg);saveDB(db);
   // Notif interne employé
-  addNotif(patId,'employé','💬 Message de Dr. '+pro.ln,subject);
+  addNotif(patId,'patient','💬 Message de Dr. '+pro.ln,subject);
   // Email de notification
   sendEmailNotification({
     _subject:'💬 Nouveau message de Dr. '+pro.fn+' '+pro.ln+' sur Psycholab',
     type:'NOUVEAU_MESSAGE',
-    destinataire:pat?pat.fn+' '+pat.ln:'employé',
+    destinataire:pat?pat.fn+' '+pat.ln:'Employé',
     expediteur:'Dr. '+pro.fn+' '+pro.ln+' ('+pro.spec+')',
     objet:subject,
     message:body+'\n\nConnectez-vous à votre espace Psycholab pour répondre directement à votre spécialiste.'
@@ -8550,18 +8550,18 @@ function patSendMessage(){
   if(!db.messages)db.messages=[];
   const msg={
     id:'msg_'+Date.now(),
-    from:'employé',fromId:s.id,fromName:user?user.fn+' '+user.ln:'employé',
+    from:'patient',fromId:s.id,fromName:user?user.fn+' '+user.ln:'Employé',
     to:'pro',toId:proId,toName:pro?'Dr. '+pro.fn+' '+pro.ln:'Praticien',
-    subject:'Message de '+( user?user.fn+' '+user.ln:'employé'),
+    subject:'Message de '+( user?user.fn+' '+user.ln:'patient'),
     body,read:false,createdAt:new Date().toISOString()
   };
   db.messages.push(msg);saveDB(db);
-  addNotif(proId,'pro','💬 Message de '+(user?user.fn+' '+user.ln:'employé'),body.substring(0,80)+'…');
+  addNotif(proId,'pro','💬 Message de '+(user?user.fn+' '+user.ln:'patient'),body.substring(0,80)+'…');
   sendEmailNotification({
     _subject:'💬 Nouveau message employé sur Psycholab -- '+(user?user.fn+' '+user.ln:''),
     type:'MESSAGE_employé',
     destinataire:pro?'Dr. '+pro.fn+' '+pro.ln:'Praticien',
-    employé:user?user.fn+' '+user.ln:'employé',
+    nomEmploye:user?user.fn+' '+user.ln:'Employé',
     message:body+'\n\nConnectez-vous à votre tableau de bord Psycholab pour répondre.'
   });
   document.getElementById('pat-msg-body').value='';
@@ -8623,7 +8623,7 @@ function generateFacture(){
   const pro=db.pros.find(p=>p.id===s.id);
   const patSel=document.getElementById('fact-employé');
   const patId=patSel.value;
-  const patName=patSel.selectedOptions[0]?.dataset.name||'employé';
+  const patName=patSel.selectedOptions[0]?.dataset.name||'Employé';
   const patEmail=patSel.selectedOptions[0]?.dataset.email||'';
   const dateSeance=document.getElementById('fact-date').value;
   const duree=document.getElementById('fact-duree').value;
@@ -9009,7 +9009,7 @@ function openMeetLink(){
   window.open(currentMeetLink,'_blank');
 }
 
-function shareMeetWithemployé(){
+function shareMeetWithPatient(){
   if(!currentMeetLink){toast('Créez d\'abord un lien Meet','red');return}
   const s=getSession();const db=getDB();
   const pro=db.pros.find(p=>p.id===s.id);
@@ -9018,7 +9018,7 @@ function shareMeetWithemployé(){
   sendEmailNotification({
     _subject:'📹 Lien Google Meet pour votre consultation -- '+today,
     type:'LIEN_MEET',
-    destinataire:'employé',
+    destinataire:'Employé',
     praticien:pro?'Dr. '+pro.fn+' '+pro.ln:'Votre praticien',
     lien_meet:currentMeetLink,
     message:'Voici votre lien Google Meet pour la consultation. Cliquez dessus à l\'heure du rendez-vous : '+currentMeetLink+'\n\nAucune application à installer -- fonctionne directement dans votre navigateur.'
@@ -9045,12 +9045,12 @@ function renderTodayVideoRDVs(pro,db,meetLink){
       <div style="font-size:.75rem;color:var(--mid);margin-bottom:.6rem">⏰ ${r.slot} · 📧 ${r.patEmail}</div>
       <div style="display:flex;gap:.4rem;flex-wrap:wrap">
         <a href="${meetLink}" target="_blank" style="background:#1B6B61;color:#fff;border-radius:8px;padding:.42rem .85rem;font-size:.76rem;font-weight:600;text-decoration:none">📹 Rejoindre Meet</a>
-        <button onclick="sendMeetToemployé('${r.patEmail}','${r.patFn}','${r.slot}')" style="background:#fff;color:#1B6B61;border:1.5px solid #1B6B61;border-radius:8px;padding:.4rem .85rem;font-size:.76rem;font-weight:600;cursor:pointer">📧 Envoyer lien</button>
+        <button onclick="sendMeetToPatient('${r.patEmail}','${r.patFn}','${r.slot}')" style="background:#fff;color:#1B6B61;border:1.5px solid #1B6B61;border-radius:8px;padding:.4rem .85rem;font-size:.76rem;font-weight:600;cursor:pointer">📧 Envoyer lien</button>
       </div>
     </div>`).join('');
 }
 
-function sendMeetToemployé(email,name,slot){
+function sendMeetToPatient(email,name,slot){
   if(!currentMeetLink){toast('Créez d\'abord un lien Meet','red');return}
   sendEmailNotification({
     _subject:'📹 Votre lien Google Meet -- Consultation à '+slot,
@@ -9254,7 +9254,7 @@ function signalerAbsencePro(rdvId){
   // Marquer le RDV
   rdv.absenceStatus='pro_absent';
   rdv.absenceReportedAt=new Date().toISOString();
-  rdv.absenceReportedBy='employé';
+  rdv.absenceReportedBy='patient';
   rdv.status='done';
 
   // Octroyer un crédit 38€ au employé
@@ -9291,11 +9291,11 @@ function signalerAbsencePro(rdvId){
   });
 
   toast('✅ Crédit de 38 € ajouté à votre compte. Vous pouvez reprendre un RDV.','green');
-  goemployé();
+  goPatient();
 }
 
 // CAS 2 — Pro signale que le employé est absent
-function signalerAbsenceemployé(rdvId){
+function signalerAbsencePatient(rdvId){
   const db=getDB();
   const rdv=db.rdvs.find(r=>r.id===rdvId);
   if(!rdv){toast('RDV introuvable','red');return;}
@@ -9330,7 +9330,7 @@ function signalerAbsenceemployé(rdvId){
     saveDB(db);
 
     // Notifier le employé
-    addNotif(rdv.patId,'employé',
+    addNotif(rdv.patId,'patient',
       '⚠️ Absence signalée — 1ère tolérance',
       'Votre spécialiste a signalé votre absence au RDV du '+formatDate(rdv.date)+'. C\'est votre 1ère absence : votre crédit de 38€ est conservé pour reprendre un RDV. Attention : à partir de la 2ème absence, la séance sera perdue.'
     );
@@ -9351,7 +9351,7 @@ function signalerAbsenceemployé(rdvId){
     saveDB(db);
 
     // Notifier le employé
-    addNotif(rdv.patId,'employé',
+    addNotif(rdv.patId,'patient',
       '❌ Absence — Séance perdue',
       'Votre spécialiste a signalé votre absence au RDV du '+formatDate(rdv.date)+'. C\'est votre '+user.absenceCount+'ème absence : la séance est perdue (aucun crédit). Le spécialiste a été compensé.'
     );
@@ -9392,7 +9392,7 @@ function applyCreditToRdv(rdvId){
 // ================================================
 //  FACTURATION AUTOMATIQUE
 // ================================================
-function envoyerFactureemployé(rdv){
+function envoyerFacturePatient(rdv){
   if(!rdv||!rdv.patEmail)return;
   const now=new Date();
   const year=now.getFullYear();
@@ -9523,7 +9523,7 @@ function envoyerFactureemployé(rdv){
       from_name:'Psycholab',
       reply_to:'reservation.psycholab@gmail.com'
     }).then(()=>{
-      addNotif(rdv.patId,'employé','🧾 Facture reçue','Facture N° '+numFacture+' pour la séance du '+dateSeance+' envoyée par email.');
+      addNotif(rdv.patId,'patient','🧾 Facture reçue','Facture N° '+numFacture+' pour la séance du '+dateSeance+' envoyée par email.');
     }).catch(e=>console.warn('Facture email error:',e));
   }
   return facture;
@@ -9552,7 +9552,7 @@ function cloturerSeance(rdvId){
   saveDB(db);
 
   // Notifier le employé
-  addNotif(rdv.patId,'employé',
+  addNotif(rdv.patId,'patient',
     '✅ Séance à confirmer — Dr. '+rdv.proLn,
     'Votre spécialiste a clôturé la séance du '+formatDate(rdv.date)+'. Confirmez-vous qu\'elle a bien eu lieu ? Rendez-vous dans "Mes rendez-vous".'
   );
@@ -9588,7 +9588,7 @@ function scheduleAutoValidation(rdvId){
       rdv.validatedBy='auto_48h';
       saveDB(db);
       // Envoyer la facture au employé (auto-validation)
-      envoyerFactureemployé(rdv);
+      envoyerFacturePatient(rdv);
       // Notifier le pro
       const s=getSession();
       if(s&&s.id===rdv.proId){
@@ -9599,7 +9599,7 @@ function scheduleAutoValidation(rdvId){
   }, 5000); // 5 secondes en démo (48h en production)
 }
 
-function employéConfirmerSeance(rdvId, action){
+function patientConfirmerSeance(rdvId, action){
   // action: 'confirm' ou 'dispute'
   const db=getDB();
   const rdv=db.rdvs.find(r=>r.id===rdvId);
@@ -9612,7 +9612,7 @@ function employéConfirmerSeance(rdvId, action){
     if(!confirm('Confirmez-vous que la séance avec Dr. '+rdv.proLn+' du '+formatDate(rdv.date)+' à '+rdv.slot+' a bien eu lieu ?'))return;
     rdv.validationStatus='validated';
     rdv.validatedAt=new Date().toISOString();
-    rdv.validatedBy='employé';
+    rdv.validatedBy='patient';
     saveDB(db);
 
     // Notifier le pro
@@ -9622,7 +9622,7 @@ function employéConfirmerSeance(rdvId, action){
     );
 
     // Envoyer la facture au employé
-    envoyerFactureemployé(rdv);
+    envoyerFacturePatient(rdv);
 
     toast('✅ Séance confirmée ! Votre facture a été envoyée par email.','green');
 
@@ -9632,7 +9632,7 @@ function employéConfirmerSeance(rdvId, action){
     rdv.validationStatus='disputed';
     rdv.disputedAt=new Date().toISOString();
     rdv.disputeMotif=motif.trim();
-    rdv.disputedBy='employé';
+    rdv.disputedBy='patient';
     saveDB(db);
 
     // Notifier le pro
@@ -9658,12 +9658,12 @@ function employéConfirmerSeance(rdvId, action){
 
   // Rafraîchir le dashboard employé
   renderPatConfirmations();
-  goemployé();
+  goPatient();
 }
 
 function renderPatConfirmations(){
   // Afficher les séances en attente de confirmation dans le dashboard employé
-  const s=getSession();if(!s||s.type!=='employé')return;
+  const s=getSession();if(!s||s.type!=='patient')return;
   const db=getDB();
   const pending=db.rdvs.filter(r=>
     r.patId===s.id &&
@@ -9692,8 +9692,8 @@ function renderPatConfirmations(){
         Votre spécialiste a clôturé cette séance. Confirmez-vous qu'elle a bien eu lieu ? Sans réponse de votre part, elle sera validée automatiquement.
       </div>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <button onclick="employéConfirmerSeance('${r.id}','confirm')" style="flex:1;background:var(--green);color:#fff;border:none;border-radius:8px;padding:.6rem .8rem;font-size:.8rem;font-weight:700;cursor:pointer;min-width:120px">✅ Confirmer la séance</button>
-        <button onclick="employéConfirmerSeance('${r.id}','dispute')" style="flex:1;background:var(--sand);color:var(--red);border:1.5px solid var(--red);border-radius:8px;padding:.6rem .8rem;font-size:.8rem;font-weight:600;cursor:pointer;min-width:120px">⚠️ Contester</button>
+        <button onclick="patientConfirmerSeance('${r.id}','confirm')" style="flex:1;background:var(--green);color:#fff;border:none;border-radius:8px;padding:.6rem .8rem;font-size:.8rem;font-weight:700;cursor:pointer;min-width:120px">✅ Confirmer la séance</button>
+        <button onclick="patientConfirmerSeance('${r.id}','dispute')" style="flex:1;background:var(--sand);color:var(--red);border:1.5px solid var(--red);border-radius:8px;padding:.6rem .8rem;font-size:.8rem;font-weight:600;cursor:pointer;min-width:120px">⚠️ Contester</button>
       </div>
     </div>`).join('');
 }
