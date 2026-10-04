@@ -254,18 +254,47 @@ async function sbSaveUser(user){
 
 async function sbSaveRdv(rdv){
   try{
+    // Construire datetime_iso en combinant date + slot pour les filtres cron
+    let datetimeIso=null;
+    try{
+      if(rdv.date&&rdv.slot){
+        const [h,m]=(rdv.slot||'00:00').split(':');
+        const d=new Date(rdv.date);
+        d.setHours(parseInt(h)||0,parseInt(m)||0,0,0);
+        datetimeIso=d.toISOString();
+      }
+    }catch(_){}
+    // Récupérer les infos patient et pro pour la Edge Function
+    const db0=getDB();
+    const pat=db0.users?.find(u=>u.id===rdv.patId)||{};
+    const pro=db0.pros?.find(p=>p.id===rdv.proId)||{};
     const payload={
-      id:rdv.id,pro_id:rdv.proId,pro_fn:rdv.proFn,pro_ln:rdv.proLn,
-      pro_email:rdv.proEmail||'',spec:rdv.spec,
-      pat_id:rdv.patId,pat_fn:rdv.patFn,pat_ln:rdv.patLn,
-      pat_email:rdv.patEmail,date:rdv.date,slot:rdv.slot,
-      type:rdv.type||'video',motif:rdv.motif||'',
+      id:rdv.id,
+      pro_id:rdv.proId,
+      pro_fn:rdv.proFn||pro.fn||'',
+      pro_ln:rdv.proLn||pro.ln||'',
+      pro_email:rdv.proEmail||pro.email||'',
+      pro_spec:rdv.spec||pro.spec||'',
+      pat_id:rdv.patId,
+      pat_fn:rdv.patFn||pat.fn||'',
+      pat_ln:rdv.patLn||pat.ln||'',
+      pat_email:rdv.patEmail||pat.email||'',
+      pat_tel:pat.tel||'',
+      pat_dob:pat.dob||'',
+      date:rdv.date,
+      slot:rdv.slot,
+      datetime_iso:datetimeIso,
+      type:rdv.type||'video',
+      motif:rdv.motif||'',
       status:rdv.status||'pending',
       validation_status:rdv.validationStatus||null,
+      reminder_24_sent:false,
+      reminder_30_sent:false,
       created_at:rdv.createdAt||new Date().toISOString()
     };
     const{error}=await supa.from('rdvs').upsert([payload],{onConflict:'id'});
     if(error)console.warn('Supabase rdv save error:',error.message);
+    else console.log('✅ RDV sauvegardé dans Supabase:',rdv.id);
   }catch(e){console.warn('sbSaveRdv exception:',e);}
 }
 
@@ -1296,7 +1325,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
       <div class="fgroup">
         <label>Tarif / séance <span style="font-size:.7rem;color:var(--soft);font-weight:400">(fixé par Psycholab)</span></label>
         <div style="background:var(--sand);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:.62rem .9rem;font-size:.86rem;color:var(--ch);font-weight:700">
-          38 € <span style="font-size:.78rem;font-weight:400;color:var(--soft)">pour une séance de 45 minutes — tarif non modifiable</span>
+          38 € <span style="font-size:.78rem;font-weight:400;color:var(--soft)">(TVA incluse) — pour une séance de 45 minutes — tarif non modifiable</span>
         </div>
         <input type="hidden" id="spro-price" value="38"/>
       </div>
@@ -2036,7 +2065,7 @@ body[data-lang="ar"]{font-family:'Segoe UI',Tahoma,'Arabic Typesetting',sans-ser
           <div style="background:rgba(255,255,255,.15);border-radius:8px;padding:.8rem">
             <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700" id="rem-tarif-patient">38 €</div>
             <div style="font-size:.7rem;opacity:.85;margin-top:.2rem">Tarif par séance</div>
-            <div style="font-size:.65rem;opacity:.7;margin-top:.15rem">Facturé au patient</div>
+            <div style="font-size:.65rem;opacity:.7;margin-top:.15rem">TVA incluse · Facturé au patient</div>
           </div>
           <div style="background:rgba(255,255,255,.25);border-radius:8px;padding:.8rem;border:2px solid rgba(255,255,255,.4)">
             <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:#FFD700" id="rem-tarif-pro">38 €</div>
@@ -2678,7 +2707,7 @@ function renderHome(){
           <span class="tag vi">📹 Téléconsultation</span>
         </div>
         <div class="card-foot">
-          <div class="price">38 €<small>/ 45 min</small></div>
+          <div class="price">38 €<small>TVA incluse · 45 min</small></div>
           <div class="nxt"><span>Fuseau</span><strong>${(p.tz||'').split('/').pop()||'--'}</strong></div>
         </div>
         <button class="btn-rdv">Prendre rendez-vous</button>
