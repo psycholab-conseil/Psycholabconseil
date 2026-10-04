@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Psycholab — Administration</title>
+<meta name="robots" content="noindex, nofollow"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+/* ═══ TOKENS ═══ */
+:root {
+  --bg: #F4F7F6;
+  --surface: #FFFFFF;
+  --surface2: #EEF3F1;
+  --border: #DDE8E6;
+  --accent: #1B6B61;
+  --accent2: #13504A;
+  --soft: #6B8C87;
+  --fg: #1A2E2B;
+  --fg2: #4A6B65;
+  --green: #16A34A;
+  --green-bg: #DCFCE7;
+  --yellow: #D97706;
+  --yellow-bg: #FEF3C7;
+  --red: #DC2626;
+  --red-bg: #FEE2E2;
+  --blue: #2563EB;
+  --blue-bg: #DBEAFE;
+  --purple: #7C3AED;
+  --purple-bg: #EDE9FE;
+  --radius: 10px;
+  --shadow: 0 1px 4px rgba(27,107,97,.08), 0 4px 16px rgba(27,107,97,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1A18; --surface: #162220; --surface2: #1C2E2B;
+    --border: #2A3D3A; --soft: #7A9E99; --fg: #E8F4F2; --fg2: #A8C5C0;
+    --green-bg: #14532D; --yellow-bg: #78350F; --red-bg: #7F1D1D;
+    --blue-bg: #1E3A8A; --purple-bg: #4C1D95;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1A18; --surface: #162220; --surface2: #1C2E2B;
+  --border: #2A3D3A; --soft: #7A9E99; --fg: #E8F4F2; --fg2: #A8C5C0;
+  --green-bg: #14532D; --yellow-bg: #78350F; --red-bg: #7F1D1D;
+  --blue-bg: #1E3A8A; --purple-bg: #4C1D95;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--fg); font-size: 14px; min-height: 100vh; }
+
+/* ═══ LOGIN ═══ */
+#login-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #0D2B26 0%, #1B6B61 100%);
+}
+.login-box {
+  background: var(--surface); border-radius: 16px; padding: 40px 36px;
+  width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  text-align: center;
+}
+.login-logo { font-family: Georgia, serif; font-size: 26px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.login-logo span { color: var(--fg2); font-weight: 400; font-size: 12px; display: block; margin-top: 2px; }
+.login-box h2 { font-size: 17px; color: var(--fg); margin: 24px 0 20px; }
+.login-box input {
+  width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: 15px; background: var(--bg); color: var(--fg); margin-bottom: 12px;
+  font-family: 'JetBrains Mono', monospace; letter-spacing: 2px;
+  transition: border-color .2s;
+}
+.login-box input:focus { outline: none; border-color: var(--accent); }
+.login-box button {
+  width: 100%; padding: 13px; background: var(--accent); color: #fff;
+  border: none; border-radius: 8px; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: background .2s;
+}
+.login-box button:hover { background: var(--accent2); }
+.login-err { color: var(--red); font-size: 13px; margin-top: 10px; display: none; }
+
+/* ═══ APP SHELL ═══ */
+#app { display: none; }
+.topbar {
+  background: var(--accent); color: #fff; padding: 0 24px;
+  height: 54px; display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+.topbar-logo { font-family: Georgia, serif; font-size: 18px; font-weight: 700; }
+.topbar-logo small { font-family: 'Inter', sans-serif; font-size: 11px; opacity: .7; font-weight: 400; margin-left: 8px; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-right button {
+  background: rgba(255,255,255,.15); border: none; color: #fff;
+  padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer;
+  transition: background .2s;
+}
+.topbar-right button:hover { background: rgba(255,255,255,.25); }
+
+.nav-tabs {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  display: flex; padding: 0 24px; gap: 0;
+}
+.nav-tab {
+  padding: 14px 20px; font-size: 14px; font-weight: 500; color: var(--soft);
+  border: none; background: none; cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: color .2s, border-color .2s;
+}
+.nav-tab:hover { color: var(--fg); }
+.nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.page { display: none; padding: 24px; max-width: 1400px; margin: 0 auto; }
+.page.active { display: block; }
+
+/* ═══ KPI TILES ═══ */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.kpi {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px 20px; box-shadow: var(--shadow);
+}
+.kpi-label { font-size: 12px; color: var(--soft); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+.kpi-value { font-size: 28px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.kpi-sub { font-size: 12px; color: var(--soft); margin-top: 4px; }
+
+/* ═══ CARDS ═══ */
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden;
+}
+.card-head {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface2);
+}
+.card-head h3 { font-size: 15px; font-weight: 600; color: var(--fg); }
+.card-body { padding: 0; }
+
+/* ═══ FILTERS ═══ */
+.filters {
+  display: flex; gap: 10px; padding: 14px 20px; border-bottom: 1px solid var(--border);
+  flex-wrap: wrap; align-items: center; background: var(--surface2);
+}
+.filters select, .filters input {
+  padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px;
+  font-size: 13px; background: var(--surface); color: var(--fg);
+  cursor: pointer;
+}
+.filters select:focus, .filters input:focus { outline: none; border-color: var(--accent); }
+.search-input { min-width: 200px; }
+.filter-label { font-size: 12px; color: var(--soft); font-weight: 500; }
+
+/* ═══ TABLE ═══ */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+  padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .5px; color: var(--soft);
+  background: var(--surface2); border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody tr { border-bottom: 1px solid var(--border); transition: background .12s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--surface2); }
+tbody td { padding: 12px 14px; color: var(--fg2); vertical-align: middle; }
+tbody td.bold { color: var(--fg); font-weight: 600; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* ═══ BADGES ═══ */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  white-space: nowrap;
+}
+.badge-pending { background: var(--yellow-bg); color: var(--yellow); }
+.badge-paid { background: var(--green-bg); color: var(--green); }
+.badge-cancelled { background: var(--red-bg); color: var(--red); }
+.badge-confirmed { background: var(--blue-bg); color: var(--blue); }
+.badge-refunded { background: var(--purple-bg); color: var(--purple); }
+
+/* ═══ BUTTONS ═══ */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 7px; font-size: 13px; font-weight: 500;
+  cursor: pointer; border: none; transition: all .2s; text-decoration: none;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent2); }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--fg2); }
+.btn-ghost:hover { background: var(--surface2); color: var(--fg); }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+.btn-green { background: var(--green-bg); color: var(--green); border: 1px solid #86EFAC; }
+.btn-green:hover { background: #BBF7D0; }
+.btn-red { background: var(--red-bg); color: var(--red); border: 1px solid #FCA5A5; }
+.btn-red:hover { background: #FECACA; }
+
+/* ═══ MODAL ═══ */
+.modal-backdrop {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5);
+  z-index: 200; align-items: center; justify-content: center; padding: 16px;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: var(--surface); border-radius: 14px; width: 100%; max-width: 560px;
+  max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 60px rgba(0,0,0,.3);
+}
+.modal-head {
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-head h3 { font-size: 17px; font-weight: 600; }
+.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--soft); line-height: 1; }
+.modal-body { padding: 24px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ═══ FORM FIELDS ═══ */
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 12px; font-weight: 600; color: var(--soft); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+.field select, .field input, .field textarea {
+  width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: 14px; background: var(--bg); color: var(--fg); font-family: 'Inter', sans-serif;
+  transition: border-color .2s;
+}
+.field select:focus, .field input:focus, .field textarea:focus { outline: none; border-color: var(--accent); }
+.field textarea { resize: vertical; min-height: 80px; }
+
+/* ═══ INFO BOX ═══ */
+.info-box {
+  padding: 12px 16px; border-radius: 8px; font-size: 13px; line-height: 1.6;
+  margin-bottom: 16px;
+}
+.info-box.green { background: var(--green-bg); color: var(--green); border-left: 3px solid var(--green); }
+.info-box.yellow { background: var(--yellow-bg); color: var(--yellow); border-left: 3px solid var(--yellow); }
+.info-box.blue { background: var(--blue-bg); color: var(--blue); border-left: 3px solid var(--blue); }
+
+/* ═══ STATS ═══ */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.pro-stat-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow);
+}
+.pro-stat-name { font-size: 15px; font-weight: 700; color: var(--fg); margin-bottom: 4px; }
+.pro-stat-spec { font-size: 12px; color: var(--soft); margin-bottom: 16px; }
+.pro-stat-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.pro-stat-row:last-child { border-bottom: none; }
+.pro-stat-val { font-weight: 600; color: var(--fg); font-variant-numeric: tabular-nums; }
+.pro-stat-val.green { color: var(--green); }
+.pro-stat-val.red { color: var(--red); }
+.commission-bar { height: 6px; background: var(--border); border-radius: 3px; margin-top: 12px; overflow: hidden; }
+.commission-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width .5s; }
+
+/* ═══ EMPTY ═══ */
+.empty { padding: 48px; text-align: center; color: var(--soft); }
+.empty-icon { font-size: 36px; margin-bottom: 12px; }
+
+/* ═══ SPINNER ═══ */
+.spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ═══ TOAST ═══ */
+#toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 10px; }
+.toast {
+  padding: 12px 18px; border-radius: 10px; font-size: 14px; font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0,0,0,.2); animation: slideIn .3s ease;
+  display: flex; align-items: center; gap: 8px;
+}
+.toast.green { background: #166534; color: #BBF7D0; }
+.toast.red { background: #7F1D1D; color: #FECACA; }
+.toast.blue { background: #1E3A8A; color: #BFDBFE; }
+@keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ═══ INVOICE PREVIEW ═══ */
+#invoice-preview-wrap { display: none; padding: 24px; background: var(--surface2); }
+#invoice-preview-frame {
+  width: 100%; height: 700px; border: none; border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.12);
+}
+
+@media (max-width: 600px) {
+  .topbar { padding: 0 14px; }
+  .nav-tabs { padding: 0 8px; }
+  .nav-tab { padding: 12px 12px; font-size: 13px; }
+  .page { padding: 14px; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">Psycho<b style="color:var(--fg)">lab</b><span>Administration · Accès restreint</span></div>
+    <h2>🔐 Connexion sécurisée</h2>
+    <input type="password" id="pwd-input" placeholder="Mot de passe admin" autocomplete="current-password"/>
+    <button onclick="doLogin()">Accéder au tableau de bord</button>
+    <div class="login-err" id="login-err">❌ Mot de passe incorrect</div>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">
+      Psycho<b>lab</b>
+      <small>🔒 Administration</small>
+    </div>
+    <div class="topbar-right">
+      <span id="topbar-date" style="font-size:12px;opacity:.7"></span>
+      <button onclick="refreshAll()">🔄 Actualiser</button>
+      <button onclick="doLogout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showTab('rdvs')">📋 RDV & Paiements</button>
+    <button class="nav-tab" onclick="showTab('stats')">📊 Statistiques</button>
+    <button class="nav-tab" onclick="showTab('pros')">👨‍⚕️ Praticiens</button>
+    <button class="nav-tab" onclick="showTab('factures')">🧾 Factures</button>
+  </div>
+
+  <!-- ═══ TAB: RDVs ═══ -->
+  <div class="page active" id="tab-rdvs">
+    <div class="kpi-grid" id="kpi-grid">
+      <div class="kpi"><div class="kpi-label">Total RDVs</div><div class="kpi-value" id="kpi-total">—</div></div>
+      <div class="kpi"><div class="kpi-label">En attente paiement</div><div class="kpi-value" id="kpi-pending" style="color:var(--yellow)">—</div></div>
+      <div class="kpi"><div class="kpi-label">Payés ✓</div><div class="kpi-value" id="kpi-paid" style="color:var(--green)">—</div></div>
+      <div class="kpi"><div class="kpi-label">CA encaissé</div><div class="kpi-value" id="kpi-ca">—</div></div>
+      <div class="kpi"><div class="kpi-label">Commissions dues</div><div class="kpi-value" id="kpi-comm" style="color:var(--accent)">—</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>📋 Liste des rendez-vous</h3>
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV()">⬇️ Exporter CSV</button>
+      </div>
+      <div class="filters">
+        <span class="filter-label">Filtres :</span>
+        <input class="search-input" type="text" id="search-rdv" placeholder="🔍 Rechercher patient, praticien, réf…" oninput="renderRdvs()"/>
+        <select id="filter-status" onchange="renderRdvs()">
+          <option value="">Tous les statuts</option>
+          <option value="pending">⏳ En attente</option>
+          <option value="paid">✅ Payé</option>
+          <option value="cancelled">❌ Annulé</option>
+          <option value="refunded">↩️ Remboursé</option>
+        </select>
+        <select id="filter-month" onchange="renderRdvs()">
+          <option value="">Tous les mois</option>
+        </select>
+        <select id="filter-pro" onchange="renderRdvs()">
+          <option value="">Tous les praticiens</option>
+        </select>
+      </div>
+      <div class="card-body">
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Réf. RDV</th>
+                <th>Patient</th>
+                <th>Praticien</th>
+                <th>Date RDV</th>
+                <th>Statut paiement</th>
+                <th>Méthode</th>
+                <th>N° Facture</th>
+                <th>Montant</th>
+                <th>Commission</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="rdvs-tbody">
+              <tr><td colspan="10" class="empty"><div class="spinner"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: STATS ═══ -->
+  <div class="page" id="tab-stats">
+    <div class="kpi-grid" style="margin-bottom:24px" id="stats-kpi"></div>
+    <h3 style="font-size:16px;font-weight:600;color:var(--fg);margin-bottom:16px">📊 Performances par praticien</h3>
+    <div class="stats-grid" id="stats-grid">
+      <div class="empty"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: PRATICIENS ═══ -->
+  <div class="page" id="tab-pros">
+    <div class="card">
+      <div class="card-head"><h3>👨‍⚕️ Praticiens inscrits</h3></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Spécialité</th>
+              <th>Email</th>
+              <th>IBAN</th>
+              <th>Statut</th>
+              <th>RDVs payés</th>
+              <th>CA généré</th>
+              <th>Commission</th>
+              <th>Taux comm.</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pros-tbody">
+            <tr><td colspan="10" class="empty"><div class="spinner"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: FACTURES ═══ -->
+  <div class="page" id="tab-factures">
+    <div class="card">
+      <div class="card-head">
+        <h3>🧾 Factures émises</h3>
+        <span style="font-size:12px;color:var(--soft)">Cliquez sur une facture pour la prévisualiser</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>N° Facture</th>
+              <th>Patient</th>
+              <th>Praticien</th>
+              <th>Date RDV</th>
+              <th>Date paiement</th>
+              <th>Montant TTC</th>
+              <th>TVA incluse</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="factures-tbody">
+            <tr><td colspan="8" class="empty"><div class="spinner"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id="invoice-preview-wrap">
+      <iframe id="invoice-preview-frame" title="Prévisualisation facture"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL PAIEMENT ═══ -->
+<div class="modal-backdrop" id="modal-payment">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>💳 Enregistrer un paiement</h3>
+      <button class="modal-close" onclick="closeModal('modal-payment')">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-rdv-info" class="info-box blue" style="margin-bottom:16px"></div>
+      <div class="field">
+        <label>Statut paiement</label>
+        <select id="mp-status">
+          <option value="paid">✅ Payé</option>
+          <option value="pending">⏳ En attente</option>
+          <option value="cancelled">❌ Annulé</option>
+          <option value="refunded">↩️ Remboursé</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Méthode de paiement</label>
+        <select id="mp-method">
+          <option value="">— Sélectionner —</option>
+          <option value="virement">Virement bancaire (IBAN)</option>
+          <option value="western_union">Western Union</option>
+          <option value="moneygram">MoneyGram</option>
+          <option value="ria">Ria Money Transfer</option>
+          <option value="wafacash">Wafacash</option>
+          <option value="wise">Wise</option>
+          <option value="remitly">Remitly</option>
+          <option value="sendwave">Sendwave</option>
+          <option value="myeasytransfer">MyEasyTransfer</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Référence / N° de transaction</label>
+        <input type="text" id="mp-ref" placeholder="Ex: WU-123456789 ou REF-20260401"/>
+      </div>
+      <div class="field">
+        <label>Notes internes (optionnel)</label>
+        <textarea id="mp-notes" placeholder="Montant reçu, remarques…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-payment')">Annuler</button>
+      <button class="btn btn-primary" onclick="savePayment()">✅ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL FACTURE ═══ -->
+<div class="modal-backdrop" id="modal-invoice">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-head">
+      <h3>🧾 Aperçu facture</h3>
+      <button class="modal-close" onclick="closeModal('modal-invoice')">×</button>
+    </div>
+    <div class="modal-body" id="modal-invoice-body" style="padding:0">
+      <iframe id="modal-invoice-frame" style="width:100%;height:600px;border:none;border-radius:0 0 14px 14px" title="Facture"></iframe>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════════
+const ADMIN_PWD = 'Psycholab@2026!Admin'; // ← Changez ce mot de passe
+const SUPABASE_URL = 'https://oybfxetivkwnynpvojki.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_3lGMf5FZavPM9aSnZEqlFA_6uzmH_CL';
+const PRICE_TTC = 38;
+const TVA_RATE = 0.19;
+const PRICE_HT = parseFloat((PRICE_TTC / (1 + TVA_RATE)).toFixed(2)); // 31.93
+const TVA_AMOUNT = parseFloat((PRICE_TTC - PRICE_HT).toFixed(2));     // 6.07
+const COMM_YEAR1 = 0.20; // 20% première année
+const COMM_AFTER = 0.15; // 15% après 1 an
+
+const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ═══════════════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════════════
+function doLogin() {
+  const val = document.getElementById('pwd-input').value;
+  if (val === ADMIN_PWD) {
+    sessionStorage.setItem('psyadmin', '1');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initApp();
+  } else {
+    const err = document.getElementById('login-err');
+    err.style.display = 'block';
+    document.getElementById('pwd-input').value = '';
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
+}
+document.getElementById('pwd-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+function doLogout() {
+  sessionStorage.removeItem('psyadmin');
+  location.reload();
+}
+// Auto-login si session active
+if (sessionStorage.getItem('psyadmin') === '1') {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.addEventListener('DOMContentLoaded', initApp);
+}
+
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let allRdvs = [];
+let allPros = [];
+let currentRdvId = null;
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+async function initApp() {
+  document.getElementById('topbar-date').textContent =
+    new Date().toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  await Promise.all([loadRdvs(), loadPros()]);
+}
+
+async function refreshAll() {
+  toast('🔄 Actualisation…', 'blue');
+  await Promise.all([loadRdvs(), loadPros()]);
+  toast('✅ Données actualisées', 'green');
+}
+
+// ═══════════════════════════════════════════════════════
+//  DATA LOADING
+// ═══════════════════════════════════════════════════════
+async function loadRdvs() {
+  const { data, error } = await supa.from('rdvs').select('*').order('created_at', { ascending: false });
+  if (error) { toast('❌ Erreur chargement RDVs: ' + error.message, 'red'); return; }
+  allRdvs = data || [];
+  buildFilters();
+  renderRdvs();
+  renderKpis();
+  renderStats();
+  renderFactures();
+}
+
+async function loadPros() {
+  const { data, error } = await supa.from('pros').select('*').order('created_at', { ascending: false });
+  if (error) { toast('❌ Erreur chargement praticiens: ' + error.message, 'red'); return; }
+  allPros = data || [];
+  renderPros();
+}
+
+// ═══════════════════════════════════════════════════════
+//  COMMISSION CALCULATION
+// ═══════════════════════════════════════════════════════
+function getCommRate(pro) {
+  if (!pro || !pro.created_at) return COMM_YEAR1;
+  const joinDate = new Date(pro.created_at);
+  const now = new Date();
+  const diffMs = now - joinDate;
+  const diffYears = diffMs / (1000 * 60 * 60 * 24 * 365.25);
+  return diffYears >= 1 ? COMM_AFTER : COMM_YEAR1;
+}
+
+function calcCommission(rdv) {
+  const pro = allPros.find(p => p.id === rdv.pro_id);
+  const rate = getCommRate(pro);
+  return { comm: parseFloat((PRICE_TTC * rate).toFixed(2)), rate, net: parseFloat((PRICE_TTC * (1 - rate)).toFixed(2)) };
+}
+
+// ═══════════════════════════════════════════════════════
+//  KPIS
+// ═══════════════════════════════════════════════════════
+function renderKpis() {
+  const total = allRdvs.length;
+  const pending = allRdvs.filter(r => (r.payment_status || 'pending') === 'pending').length;
+  const paid = allRdvs.filter(r => r.payment_status === 'paid').length;
+  const ca = paid * PRICE_TTC;
+  const totalComm = allRdvs.filter(r => r.payment_status === 'paid')
+    .reduce((acc, r) => acc + calcCommission(r).comm, 0);
+
+  document.getElementById('kpi-total').textContent = total;
+  document.getElementById('kpi-pending').textContent = pending;
+  document.getElementById('kpi-paid').textContent = paid;
+  document.getElementById('kpi-ca').textContent = ca.toFixed(0) + ' €';
+  document.getElementById('kpi-comm').textContent = totalComm.toFixed(2) + ' €';
+}
+
+// ═══════════════════════════════════════════════════════
+//  FILTERS
+// ═══════════════════════════════════════════════════════
+function buildFilters() {
+  // Mois
+  const months = [...new Set(allRdvs.map(r => r.created_at?.slice(0,7)).filter(Boolean))].sort().reverse();
+  const mSel = document.getElementById('filter-month');
+  const mVal = mSel.value;
+  mSel.innerHTML = '<option value="">Tous les mois</option>' +
+    months.map(m => `<option value="${m}">${formatMonth(m)}</option>`).join('');
+  mSel.value = mVal;
+
+  // Praticiens
+  const proNames = [...new Set(allRdvs.map(r => r.pro_fn + ' ' + r.pro_ln).filter(n => n.trim()))];
+  const pSel = document.getElementById('filter-pro');
+  const pVal = pSel.value;
+  pSel.innerHTML = '<option value="">Tous les praticiens</option>' +
+    proNames.map(n => `<option value="${n}">Dr. ${n}</option>`).join('');
+  pSel.value = pVal;
+}
+
+function formatMonth(ym) {
+  const [y, m] = ym.split('-');
+  const months = ['Janv.','Févr.','Mars','Avril','Mai','Juin','Juil.','Août','Sept.','Oct.','Nov.','Déc.'];
+  return months[parseInt(m)-1] + ' ' + y;
+}
+
+function getFilteredRdvs() {
+  const q = document.getElementById('search-rdv').value.toLowerCase();
+  const st = document.getElementById('filter-status').value;
+  const mo = document.getElementById('filter-month').value;
+  const pr = document.getElementById('filter-pro').value;
+  return allRdvs.filter(r => {
+    const name = ((r.pat_fn||'')+(r.pat_ln||'')+(r.pro_fn||'')+(r.pro_ln||'')+(r.id||'')+(r.invoice_number||'')).toLowerCase();
+    if (q && !name.includes(q)) return false;
+    if (st && (r.payment_status || 'pending') !== st) return false;
+    if (mo && !(r.created_at||'').startsWith(mo)) return false;
+    if (pr && (r.pro_fn+' '+r.pro_ln) !== pr) return false;
+    return true;
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER RDVs TABLE
+// ═══════════════════════════════════════════════════════
+function renderRdvs() {
+  const filtered = getFilteredRdvs();
+  const tbody = document.getElementById('rdvs-tbody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty"><div class="empty-icon">📋</div>Aucun rendez-vous trouvé</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map(r => {
+    const ps = r.payment_status || 'pending';
+    const { comm } = calcCommission(r);
+    const rdvDate = r.date ? new Date(r.date).toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' + (r.slot||'') : '—';
+    return `<tr>
+      <td><span class="mono">${escHtml(r.id||'').slice(0,16)}…</span></td>
+      <td class="bold">${escHtml((r.pat_fn||'') + ' ' + (r.pat_ln||''))}<br/><span style="font-size:11px;color:var(--soft)">${escHtml(r.pat_email||'')}</span></td>
+      <td>Dr. ${escHtml((r.pro_fn||'') + ' ' + (r.pro_ln||''))}<br/><span style="font-size:11px;color:var(--soft)">${escHtml(r.pro_spec||'')}</span></td>
+      <td>${rdvDate}</td>
+      <td>${badgePayment(ps)}</td>
+      <td>${r.payment_method ? methodLabel(r.payment_method) : '<span style="color:var(--soft)">—</span>'}</td>
+      <td><span class="mono" style="font-size:11px">${escHtml(r.invoice_number||'—')}</span></td>
+      <td class="bold">${ps === 'paid' ? '38,00 €' : '<span style="color:var(--soft)">—</span>'}</td>
+      <td>${ps === 'paid' ? `<span style="color:var(--accent);font-weight:600">${comm.toFixed(2)} €</span>` : '<span style="color:var(--soft)">—</span>'}</td>
+      <td>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="openPaymentModal('${escHtml(r.id)}')">💳 Paiement</button>
+          ${r.invoice_number ? `<button class="btn btn-ghost btn-sm" onclick="showInvoice('${escHtml(r.id)}')">🧾 Facture</button>` : ''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function badgePayment(status) {
+  const map = {
+    pending: ['⏳','badge-pending','En attente'],
+    paid: ['✅','badge-paid','Payé'],
+    cancelled: ['❌','badge-cancelled','Annulé'],
+    refunded: ['↩️','badge-refunded','Remboursé']
+  };
+  const [icon, cls, label] = map[status] || ['?','','Inconnu'];
+  return `<span class="badge ${cls}">${icon} ${label}</span>`;
+}
+
+function methodLabel(m) {
+  const map = {
+    virement:'🏦 Virement', western_union:'WU', moneygram:'MoneyGram',
+    ria:'Ria', wafacash:'Wafacash', wise:'Wise', remitly:'Remitly',
+    sendwave:'Sendwave', myeasytransfer:'MyEasyTransfer', autre:'Autre'
+  };
+  return map[m] || m;
+}
+
+// ═══════════════════════════════════════════════════════
+//  STATS
+// ═══════════════════════════════════════════════════════
+function renderStats() {
+  const paidRdvs = allRdvs.filter(r => r.payment_status === 'paid');
+  const totalCA = paidRdvs.length * PRICE_TTC;
+  const totalComm = paidRdvs.reduce((acc,r) => acc + calcCommission(r).comm, 0);
+
+  document.getElementById('stats-kpi').innerHTML = `
+    <div class="kpi"><div class="kpi-label">RDVs payés</div><div class="kpi-value">${paidRdvs.length}</div></div>
+    <div class="kpi"><div class="kpi-label">CA total encaissé</div><div class="kpi-value">${totalCA.toFixed(0)} €</div></div>
+    <div class="kpi"><div class="kpi-label">Commissions totales</div><div class="kpi-value" style="color:var(--accent)">${totalComm.toFixed(2)} €</div></div>
+    <div class="kpi"><div class="kpi-label">Reversé aux praticiens</div><div class="kpi-value" style="color:var(--green)">${(totalCA-totalComm).toFixed(2)} €</div></div>
+  `;
+
+  // Group by pro
+  const proMap = {};
+  allRdvs.forEach(r => {
+    const key = r.pro_id || (r.pro_fn + r.pro_ln);
+    if (!proMap[key]) proMap[key] = { fn: r.pro_fn, ln: r.pro_ln, spec: r.pro_spec, rdvs: [], pro_id: r.pro_id };
+    proMap[key].rdvs.push(r);
+  });
+
+  const cards = Object.values(proMap).map(p => {
+    const paid = p.rdvs.filter(r => r.payment_status === 'paid');
+    const pending = p.rdvs.filter(r => (r.payment_status||'pending') === 'pending');
+    const pro = allPros.find(x => x.id === p.pro_id);
+    const rate = getCommRate(pro);
+    const ca = paid.length * PRICE_TTC;
+    const comm = paid.reduce((acc,r) => acc + calcCommission(r).comm, 0);
+    const net = ca - comm;
+    const joinDate = pro?.created_at ? new Date(pro.created_at) : null;
+    const yearsIn = joinDate ? ((new Date() - joinDate) / (1000*60*60*24*365.25)).toFixed(1) : '?';
+    // Progress toward 1 year (rate change)
+    const progress = joinDate ? Math.min(100, ((new Date()-joinDate)/(1000*60*60*24*365.25))*100) : 0;
+
+    return `<div class="pro-stat-card">
+      <div class="pro-stat-name">Dr. ${escHtml(p.fn||'')} ${escHtml(p.ln||'')}</div>
+      <div class="pro-stat-spec">${escHtml(p.spec||'')} · ${yearsIn} an(s) sur la plateforme</div>
+      <div class="pro-stat-row"><span>Total RDVs</span><span class="pro-stat-val">${p.rdvs.length}</span></div>
+      <div class="pro-stat-row"><span>Payés</span><span class="pro-stat-val green">${paid.length}</span></div>
+      <div class="pro-stat-row"><span>En attente</span><span class="pro-stat-val" style="color:var(--yellow)">${pending.length}</span></div>
+      <div class="pro-stat-row"><span>CA encaissé</span><span class="pro-stat-val">${ca.toFixed(0)} €</span></div>
+      <div class="pro-stat-row"><span>Commission Psycholab (${(rate*100).toFixed(0)}%)</span><span class="pro-stat-val" style="color:var(--accent)">${comm.toFixed(2)} €</span></div>
+      <div class="pro-stat-row"><span>Reversé au praticien</span><span class="pro-stat-val green">${net.toFixed(2)} €</span></div>
+      <div style="margin-top:12px;font-size:11px;color:var(--soft)">
+        ${rate === COMM_YEAR1 ? `⏳ Taux à 20% — passage à 15% dans ${(12 - Math.floor(parseFloat(yearsIn)*12))} mois` : '✅ Taux fidélité 15% actif'}
+      </div>
+      <div class="commission-bar"><div class="commission-fill" style="width:${progress}%"></div></div>
+    </div>`;
+  });
+
+  document.getElementById('stats-grid').innerHTML = cards.length
+    ? cards.join('')
+    : `<div class="empty"><div class="empty-icon">📊</div>Aucune donnée</div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  PRATICIENS TABLE
+// ═══════════════════════════════════════════════════════
+function renderPros() {
+  const tbody = document.getElementById('pros-tbody');
+  if (!allPros.length) {
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty"><div class="empty-icon">👨‍⚕️</div>Aucun praticien</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = allPros.map(pro => {
+    const proRdvs = allRdvs.filter(r => r.pro_id === pro.id && r.payment_status === 'paid');
+    const rate = getCommRate(pro);
+    const ca = proRdvs.length * PRICE_TTC;
+    const comm = proRdvs.reduce((acc,r) => acc + calcCommission(r).comm, 0);
+    const statusBadge = pro.active
+      ? '<span class="badge badge-paid">✅ Actif</span>'
+      : '<span class="badge badge-pending">⏳ Inactif</span>';
+    const iban = pro.bank_iban ? `<span class="mono">${escHtml(pro.bank_iban.slice(0,8))}…</span>` : '<span style="color:var(--soft)">—</span>';
+    return `<tr>
+      <td class="bold">Dr. ${escHtml(pro.fn||'')} ${escHtml(pro.ln||'')}</td>
+      <td>${escHtml(pro.spec||'')}</td>
+      <td style="font-size:12px">${escHtml(pro.email||'')}</td>
+      <td>${iban}</td>
+      <td>${statusBadge}</td>
+      <td class="bold">${proRdvs.length}</td>
+      <td class="bold">${ca.toFixed(0)} €</td>
+      <td style="color:var(--accent);font-weight:600">${comm.toFixed(2)} €</td>
+      <td><span class="badge ${rate===COMM_AFTER?'badge-paid':'badge-confirmed'}">${(rate*100).toFixed(0)}%</span></td>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick="toggleProStatus('${escHtml(pro.id)}', ${!pro.active})">${pro.active ? '🔴 Désactiver' : '🟢 Activer'}</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function toggleProStatus(proId, newActive) {
+  const { error } = await supa.from('pros').update({ active: newActive }).eq('id', proId);
+  if (error) { toast('❌ Erreur: ' + error.message, 'red'); return; }
+  toast(newActive ? '✅ Praticien activé' : '🔴 Praticien désactivé', newActive ? 'green' : 'red');
+  await loadPros();
+}
+
+// ═══════════════════════════════════════════════════════
+//  FACTURES TABLE
+// ═══════════════════════════════════════════════════════
+function renderFactures() {
+  const issued = allRdvs.filter(r => r.invoice_number);
+  const tbody = document.getElementById('factures-tbody');
+  if (!issued.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><div class="empty-icon">🧾</div>Aucune facture générée — les factures sont créées automatiquement lors du passage au statut "Payé"</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = issued.map(r => {
+    const rdvDate = r.date ? new Date(r.date).toLocaleDateString('fr-FR') + ' ' + (r.slot||'') : '—';
+    const payDate = r.payment_date ? new Date(r.payment_date).toLocaleDateString('fr-FR') : '—';
+    return `<tr>
+      <td><span class="mono" style="font-weight:700;color:var(--accent)">${escHtml(r.invoice_number)}</span></td>
+      <td class="bold">${escHtml((r.pat_fn||'')+' '+(r.pat_ln||''))}</td>
+      <td>Dr. ${escHtml((r.pro_fn||'')+' '+(r.pro_ln||''))}</td>
+      <td>${rdvDate}</td>
+      <td>${payDate}</td>
+      <td class="bold">38,00 €</td>
+      <td style="color:var(--soft);font-size:12px">${TVA_AMOUNT.toFixed(2)} € (19%)</td>
+      <td>
+        <button class="btn btn-primary btn-sm" onclick="showInvoice('${escHtml(r.id)}')">🧾 Voir</button>
+        <button class="btn btn-ghost btn-sm" onclick="printInvoice('${escHtml(r.id)}')">🖨️ Imprimer</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  PAYMENT MODAL
+// ═══════════════════════════════════════════════════════
+function openPaymentModal(rdvId) {
+  currentRdvId = rdvId;
+  const rdv = allRdvs.find(r => r.id === rdvId);
+  if (!rdv) return;
+  const rdvDate = rdv.date ? new Date(rdv.date).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}) + ' à ' + (rdv.slot||'') : '—';
+  document.getElementById('modal-rdv-info').innerHTML =
+    `<strong>Patient :</strong> ${escHtml((rdv.pat_fn||'')+' '+(rdv.pat_ln||''))}<br/>
+     <strong>Praticien :</strong> Dr. ${escHtml((rdv.pro_fn||'')+' '+(rdv.pro_ln||''))}<br/>
+     <strong>Date :</strong> ${rdvDate}<br/>
+     <strong>Réf. :</strong> <span class="mono">${escHtml(rdv.id||'')}</span>`;
+  document.getElementById('mp-status').value = rdv.payment_status || 'pending';
+  document.getElementById('mp-method').value = rdv.payment_method || '';
+  document.getElementById('mp-ref').value = rdv.payment_reference || '';
+  document.getElementById('mp-notes').value = '';
+  openModal('modal-payment');
+}
+
+async function savePayment() {
+  if (!currentRdvId) return;
+  const status = document.getElementById('mp-status').value;
+  const method = document.getElementById('mp-method').value;
+  const ref = document.getElementById('mp-ref').value.trim();
+
+  const updates = {
+    payment_status: status,
+    payment_method: method || null,
+    payment_reference: ref || null,
+    payment_date: status === 'paid' ? new Date().toISOString() : null
+  };
+
+  const { error } = await supa.from('rdvs').update(updates).eq('id', currentRdvId);
+  if (error) { toast('❌ Erreur: ' + error.message, 'red'); return; }
+  toast('✅ Paiement enregistré !', 'green');
+  closeModal('modal-payment');
+  await loadRdvs();
+}
+
+// ═══════════════════════════════════════════════════════
+//  INVOICE GENERATION
+// ═══════════════════════════════════════════════════════
+function buildInvoiceHTML(rdv) {
+  if (!rdv) return '';
+  const invNum = rdv.invoice_number || 'PSY-' + new Date().getFullYear() + '-XXX';
+  const rdvDate = rdv.date ? new Date(rdv.date).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) + ' à ' + (rdv.slot||'') : '—';
+  const payDate = rdv.payment_date ? new Date(rdv.payment_date).toLocaleDateString('fr-FR') : new Date().toLocaleDateString('fr-FR');
+  const methodLabel = {
+    virement:'Virement bancaire (IBAN)', western_union:'Western Union', moneygram:'MoneyGram',
+    ria:'Ria Money Transfer', wafacash:'Wafacash', wise:'Wise', remitly:'Remitly',
+    sendwave:'Sendwave', myeasytransfer:'MyEasyTransfer', autre:'Autre'
+  };
+
+  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Facture ${invNum}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Arial,Helvetica,sans-serif;color:#1A2E2B;background:#fff;padding:32px 40px;max-width:680px;margin:0 auto;font-size:13px}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid #1B6B61}
+    .logo{font-family:Georgia,serif;font-size:24px;font-weight:700;color:#1B6B61}
+    .logo-sub{font-size:10px;color:#8A9E9B;margin-top:3px}
+    .inv-meta{text-align:right}
+    .inv-num{font-size:18px;font-weight:700;color:#1B6B61;font-family:monospace}
+    .inv-date{font-size:11px;color:#8A9E9B;margin-top:4px}
+    .parties{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px}
+    .party-label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#8A9E9B;font-weight:700;margin-bottom:8px}
+    .party-name{font-size:14px;font-weight:700;color:#1A2E2B;margin-bottom:4px}
+    .party-detail{font-size:12px;color:#4A6B65;line-height:1.6}
+    table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:13px}
+    thead th{background:#E8F4F2;padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:#1B6B61;border:1px solid #C8E0DC}
+    tbody td{padding:12px;border:1px solid #E8F0EF;color:#2D4F4B}
+    .totals{margin-left:auto;width:280px}
+    .totals tr td{padding:7px 10px;border:none;font-size:13px}
+    .totals .total-row td{background:#1B6B61;color:#fff;font-weight:700;font-size:14px;border-radius:4px;padding:10px}
+    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#DCFCE7;color:#16A34A}
+    .payment-info{background:#F0FDF9;border:1px solid #C8E0DC;border-radius:8px;padding:14px 16px;margin-top:16px;font-size:12px;color:#2D4F4B}
+    .payment-info strong{color:#1B6B61}
+    .footer{margin-top:32px;padding-top:16px;border-top:1px solid #E8F0EF;font-size:10px;color:#B0BCBA;text-align:center;line-height:1.8}
+    @media print{body{padding:16px}button{display:none}}
+  </style></head><body>
+  <div class="header">
+    <div>
+      <div class="logo">Psycho<b style="color:#1A2E2B">lab</b></div>
+      <div class="logo-sub">Psycholab Conseil<br/>Plateforme de téléconsultation · psycholab.tn<br/>reservation.psycholab@gmail.com</div>
+    </div>
+    <div class="inv-meta">
+      <div class="inv-num">${invNum}</div>
+      <div class="inv-date">Date d'émission : ${payDate}</div>
+      <div style="margin-top:8px"><span class="badge">✅ Payé</span></div>
+    </div>
+  </div>
+
+  <div class="parties">
+    <div>
+      <div class="party-label">Émetteur</div>
+      <div class="party-name">Psycholab Conseil</div>
+      <div class="party-detail">
+        Tunis, Tunisie<br/>
+        reservation.psycholab@gmail.com<br/>
+        psycholab.tn
+      </div>
+    </div>
+    <div>
+      <div class="party-label">Patient</div>
+      <div class="party-name">${escHtml((rdv.pat_fn||'')+' '+(rdv.pat_ln||''))}</div>
+      <div class="party-detail">
+        ${escHtml(rdv.pat_email||'')}<br/>
+        ${rdv.pat_tel ? escHtml(rdv.pat_tel) : ''}
+      </div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Praticien</th>
+        <th>Date séance</th>
+        <th>Durée</th>
+        <th>Montant TTC</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Téléconsultation de psychologie — Séance individuelle</td>
+        <td>Dr. ${escHtml((rdv.pro_fn||'')+' '+(rdv.pro_ln||''))}<br/><small style="color:#8A9E9B">${escHtml(rdv.pro_spec||'')}</small></td>
+        <td>${rdvDate}</td>
+        <td>45 minutes</td>
+        <td style="font-weight:700;color:#1B6B61">38,00 €</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table class="totals">
+    <tr><td style="color:#6B8C87">Prix TTC (TVA incluse)</td><td style="text-align:right;font-weight:600">38,00 €</td></tr>
+    <tr><td style="color:#8A9E9B;font-size:11px">dont TVA 19% (incluse)</td><td style="text-align:right;font-size:11px;color:#8A9E9B">${TVA_AMOUNT.toFixed(2)} €</td></tr>
+    <tr><td style="color:#8A9E9B;font-size:11px">dont HT</td><td style="text-align:right;font-size:11px;color:#8A9E9B">${PRICE_HT.toFixed(2)} €</td></tr>
+    <tr class="total-row"><td><strong>TOTAL TTC</strong></td><td style="text-align:right"><strong>38,00 €</strong></td></tr>
+  </table>
+
+  <div class="payment-info">
+    <strong>Mode de paiement :</strong> ${methodLabel[rdv.payment_method] || rdv.payment_method || '—'}<br/>
+    ${rdv.payment_reference ? `<strong>Référence transaction :</strong> ${escHtml(rdv.payment_reference)}<br/>` : ''}
+    <strong>Date de paiement :</strong> ${payDate}
+  </div>
+
+  <div class="footer">
+    Psycholab Conseil · Tunis, Tunisie · reservation.psycholab@gmail.com · psycholab.tn<br/>
+    Facture émise conformément à la législation tunisienne · TVA 19% incluse dans le prix affiché<br/>
+    Timbre fiscal : 1,000 TND applicable sur les factures libellées en dinars<br/>
+    Référence RDV : ${escHtml(rdv.id||'')}
+  </div>
+  </body></html>`;
+}
+
+function showInvoice(rdvId) {
+  const rdv = allRdvs.find(r => r.id === rdvId);
+  if (!rdv) return;
+  const html = buildInvoiceHTML(rdv);
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  document.getElementById('modal-invoice-frame').src = url;
+  openModal('modal-invoice');
+}
+
+function printInvoice(rdvId) {
+  const rdv = allRdvs.find(r => r.id === rdvId);
+  if (!rdv) return;
+  const html = buildInvoiceHTML(rdv);
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(() => w.print(), 500);
+}
+
+// ═══════════════════════════════════════════════════════
+//  EXPORT CSV
+// ═══════════════════════════════════════════════════════
+function exportCSV() {
+  const filtered = getFilteredRdvs();
+  const header = ['Réf RDV','Patient','Email patient','Praticien','Spécialité','Date RDV','Heure','Statut paiement','Méthode','Référence paiement','N° Facture','Montant TTC','Commission Psycholab','Net praticien','Date paiement'];
+  const rows = filtered.map(r => {
+    const { comm, net } = calcCommission(r);
+    const paid = r.payment_status === 'paid';
+    return [
+      r.id, (r.pat_fn+' '+r.pat_ln), r.pat_email,
+      'Dr. '+(r.pro_fn+' '+r.pro_ln), r.pro_spec,
+      r.date ? new Date(r.date).toLocaleDateString('fr-FR') : '',
+      r.slot || '',
+      r.payment_status || 'pending',
+      r.payment_method || '',
+      r.payment_reference || '',
+      r.invoice_number || '',
+      paid ? '38.00' : '',
+      paid ? comm.toFixed(2) : '',
+      paid ? net.toFixed(2) : '',
+      r.payment_date ? new Date(r.payment_date).toLocaleDateString('fr-FR') : ''
+    ].map(v => '"'+(v||'').toString().replace(/"/g,'""')+'"');
+  });
+  const csv = [header.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob(['﻿'+csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'psycholab_rdvs_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('✅ Export CSV téléchargé', 'green');
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAV TABS
+// ═══════════════════════════════════════════════════════
+function showTab(tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    if (t.textContent.toLowerCase().includes(tab === 'rdvs' ? 'rdv' : tab === 'stats' ? 'stat' : tab === 'pros' ? 'prat' : 'fact')) {
+      t.classList.add('active');
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  MODALS
+// ═══════════════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-backdrop').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ═══════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════
+function toast(msg, type = 'blue') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// ═══════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
