@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Espace Praticien — Psycholab</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap">
+<style>
+:root {
+  --green: #1B6B61;
+  --green-dark: #0D3D36;
+  --green-light: #E8F4F2;
+  --green-mid: #2A8A7E;
+  --gold: #C9A84C;
+  --bg: #F7FAF9;
+  --fg: #1A2E2B;
+  --muted: #6B8C87;
+  --border: #D0E5E2;
+  --white: #FFFFFF;
+  --error: #DC2626;
+  --success: #16A34A;
+  --warning: #D97706;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1F1C; --fg: #E8F4F2; --muted: #8ABDB6;
+    --border: #1B3E38; --white: #142320; --green-light: #0D2B26;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1F1C; --fg: #E8F4F2; --muted: #8ABDB6;
+  --border: #1B3E38; --white: #142320; --green-light: #0D2B26;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--fg); min-height: 100vh; }
+
+/* ── Login screen ── */
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+.login-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px 32px;
+  width: 100%;
+  max-width: 420px;
+}
+.login-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  color: var(--green);
+  text-align: center;
+  margin-bottom: 4px;
+}
+.login-logo span { color: var(--gold); }
+.login-sub { text-align: center; color: var(--muted); font-size: 0.85rem; margin-bottom: 32px; }
+.login-title { font-size: 1.1rem; font-weight: 700; color: var(--fg); margin-bottom: 20px; }
+
+/* ── App shell ── */
+.app { display: none; flex-direction: column; min-height: 100vh; }
+.app.active { display: flex; }
+
+.topbar {
+  background: var(--green-dark);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.topbar-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  color: #fff;
+}
+.topbar-logo span { color: var(--gold); }
+.topbar-user { display: flex; align-items: center; gap: 10px; }
+.topbar-name { color: #A8D5CC; font-size: 0.8rem; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.btn-logout {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Nav tabs ── */
+.nav-tabs {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-tabs::-webkit-scrollbar { display: none; }
+.nav-tab {
+  padding: 14px 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: 'Inter', sans-serif;
+}
+.nav-tab.active { color: var(--green); border-bottom-color: var(--green); }
+
+/* ── Content ── */
+.content { flex: 1; padding: 24px 16px; max-width: 700px; margin: 0 auto; width: 100%; }
+
+/* ── Cards ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Stats row ── */
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-tile {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 12px;
+  text-align: center;
+}
+.stat-num { font-size: 1.6rem; font-weight: 700; color: var(--green); }
+.stat-label { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+/* ── RDV list ── */
+.rdv-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.rdv-item:last-child { border-bottom: none; }
+.rdv-date {
+  background: var(--green-light);
+  border-radius: 10px;
+  padding: 8px 10px;
+  text-align: center;
+  min-width: 52px;
+  flex-shrink: 0;
+}
+.rdv-day { font-size: 1.2rem; font-weight: 700; color: var(--green); line-height: 1; }
+.rdv-month { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+.rdv-info { flex: 1; min-width: 0; }
+.rdv-patient { font-weight: 600; font-size: 0.9rem; }
+.rdv-meta { font-size: 0.8rem; color: var(--muted); margin-top: 3px; }
+.rdv-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+.badge-pending { background: #FEF3C7; color: var(--warning); }
+.badge-paid { background: #D1FAE5; color: var(--success); }
+.badge-done { background: var(--green-light); color: var(--green); }
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+/* ── Disponibilités ── */
+.dispo-grid {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr 1fr;
+  gap: 1px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 0.8rem;
+  margin-bottom: 16px;
+}
+.dispo-header { background: var(--green); color: #fff; padding: 9px 6px; font-weight: 600; text-align: center; font-size: 0.75rem; }
+.dispo-day { background: var(--green-light); padding: 9px 8px; font-weight: 600; color: var(--green-dark); font-size: 0.78rem; display: flex; align-items: center; }
+.dispo-cell { background: var(--white); padding: 8px; display: flex; align-items: center; justify-content: center; }
+.dispo-check { width: 18px; height: 18px; accent-color: var(--green); cursor: pointer; }
+
+/* ── Profil ── */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--fg); margin-bottom: 5px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 10px 12px;
+  border: 1.5px solid var(--border); border-radius: 9px;
+  font-size: 0.875rem; font-family: 'Inter', sans-serif;
+  color: var(--fg); background: var(--bg); outline: none;
+  transition: border-color 0.2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--green); }
+.form-textarea { resize: vertical; min-height: 90px; }
+
+/* ── Buttons ── */
+.btn {
+  padding: 11px 22px; border-radius: 9px;
+  font-size: 0.875rem; font-weight: 600;
+  border: none; cursor: pointer;
+  transition: all 0.2s; font-family: 'Inter', sans-serif;
+}
+.btn-primary { background: var(--green); color: #fff; }
+.btn-primary:hover { background: var(--green-mid); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-ghost { background: var(--green-light); color: var(--green); border: 1.5px solid var(--border); }
+
+/* ── Earnings ── */
+.earning-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+.earning-row:last-child { border-bottom: none; }
+.earning-label { color: var(--muted); }
+.earning-value { font-weight: 600; }
+.earning-value.positive { color: var(--success); }
+
+/* ── Alerts ── */
+.alert {
+  border-radius: 10px; padding: 12px 14px;
+  font-size: 0.85rem; margin-bottom: 16px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.alert-info { background: var(--green-light); color: var(--green); border: 1px solid var(--border); }
+.alert-warning { background: #FEF3C7; color: var(--warning); border: 1px solid #FDE68A; }
+
+/* ── Saving indicator ── */
+.saving-indicator {
+  position: fixed; bottom: 24px; right: 16px;
+  background: var(--green); color: #fff;
+  padding: 10px 16px; border-radius: 10px;
+  font-size: 0.8rem; font-weight: 600;
+  transform: translateY(80px); transition: transform 0.3s;
+  z-index: 50;
+}
+.saving-indicator.show { transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="saving-indicator" id="savingIndicator">✓ Enregistré</div>
+
+<!-- ══════════════ LOGIN SCREEN ══════════════ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">Psycho<span>lab</span></div>
+    <div class="login-sub">Espace Praticien</div>
+    <div class="login-title">Connexion</div>
+
+    <div class="form-group">
+      <label class="form-label">Adresse email</label>
+      <input type="email" class="form-input" id="loginEmail" placeholder="votre@email.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mot de passe</label>
+      <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <div id="loginError" style="color:var(--error);font-size:0.82rem;margin-bottom:12px;display:none;"></div>
+    <button class="btn btn-primary" style="width:100%;" onclick="doLogin()">Se connecter</button>
+
+    <p style="text-align:center;margin-top:20px;font-size:0.8rem;color:var(--muted);">
+      Accès réservé aux praticiens validés par Psycholab.<br>
+      Premier accès ? Contactez <strong>reservation.psycholab@gmail.com</strong>
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════ APP ══════════════ -->
+<div class="app" id="app">
+
+  <div class="topbar">
+    <div class="topbar-logo">Psycho<span>lab</span></div>
+    <div class="topbar-user">
+      <div class="topbar-name" id="topbarName">—</div>
+      <button class="btn-logout" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showTab('rdvs')">📅 Mes RDV</button>
+    <button class="nav-tab" onclick="showTab('dispos')">🕐 Disponibilités</button>
+    <button class="nav-tab" onclick="showTab('gains')">💶 Mes gains</button>
+    <button class="nav-tab" onclick="showTab('profil')">👤 Mon profil</button>
+  </div>
+
+  <!-- TAB : RDV -->
+  <div class="content" id="tab-rdvs">
+    <div class="stats-row">
+      <div class="stat-tile">
+        <div class="stat-num" id="statTotal">—</div>
+        <div class="stat-label">RDV total</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-num" id="statMois">—</div>
+        <div class="stat-label">Ce mois</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-num" id="statProchain">—</div>
+        <div class="stat-label">Prochain</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Prochains rendez-vous</div>
+      <div id="rdvList"><div class="empty-state"><div class="empty-icon">📭</div>Chargement…</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">✅ RDV passés</div>
+      <div id="rdvPastList"><div class="empty-state"><div class="empty-icon">📂</div>Chargement…</div></div>
+    </div>
+  </div>
+
+  <!-- TAB : DISPONIBILITÉS -->
+  <div class="content" id="tab-dispos" style="display:none;">
+    <div class="alert alert-info">
+      ℹ️ Vos disponibilités sont affichées aux patients lors de la réservation. Modifiez-les à tout moment.
+    </div>
+
+    <div class="card">
+      <div class="card-title">🕐 Mes créneaux habituels</div>
+      <div class="dispo-grid">
+        <div class="dispo-header">Jour</div>
+        <div class="dispo-header">Matin<br><small style="font-weight:400;opacity:0.8;">8h–12h</small></div>
+        <div class="dispo-header">Après-midi<br><small style="font-weight:400;opacity:0.8;">13h–17h</small></div>
+        <div class="dispo-header">Soir<br><small style="font-weight:400;opacity:0.8;">18h–21h</small></div>
+        <div class="dispo-day">Lundi</div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Lundi matin" id="s-lun-mat"></div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Lundi après-midi" id="s-lun-am"></div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Lundi soir" id="s-lun-soir"></div>
+        <div class="dispo-day">Mardi</div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Mardi matin" id="s-mar-mat"></div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Mardi après-midi" id="s-mar-am"></div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Mardi soir" id="s-mar-soir"></div>
+        <div class="dispo-day">Mercredi</div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Mercredi matin" id="s-mer-mat"></div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Mercredi après-midi" id="s-mer-am"></div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Mercredi soir" id="s-mer-soir"></div>
+        <div class="dispo-day">Jeudi</div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Jeudi matin" id="s-jeu-mat"></div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Jeudi après-midi" id="s-jeu-am"></div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Jeudi soir" id="s-jeu-soir"></div>
+        <div class="dispo-day">Vendredi</div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Vendredi matin" id="s-ven-mat"></div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Vendredi après-midi" id="s-ven-am"></div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Vendredi soir" id="s-ven-soir"></div>
+        <div class="dispo-day">Samedi</div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Samedi matin" id="s-sam-mat"></div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Samedi après-midi" id="s-sam-am"></div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Samedi soir" id="s-sam-soir"></div>
+        <div class="dispo-day">Dimanche</div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Dimanche matin" id="s-dim-mat"></div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Dimanche après-midi" id="s-dim-am"></div>
+        <div class="dispo-cell"><input type="checkbox" class="dispo-check" data-slot="Dimanche soir" id="s-dim-soir"></div>
+      </div>
+      <button class="btn btn-primary" onclick="saveDispos()">💾 Enregistrer mes disponibilités</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📵 Absences / Congés</div>
+      <div class="alert alert-warning" style="margin-bottom:12px;">
+        ⚠️ Indiquez vos dates d'absence pour bloquer les réservations.
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date de début</label>
+        <input type="date" class="form-input" id="absenceDebut">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date de fin</label>
+        <input type="date" class="form-input" id="absenceFin">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Raison (optionnel)</label>
+        <input type="text" class="form-input" id="absenceRaison" placeholder="Congés, formation…">
+      </div>
+      <button class="btn btn-primary" onclick="saveAbsence()">Signaler cette absence</button>
+    </div>
+  </div>
+
+  <!-- TAB : GAINS -->
+  <div class="content" id="tab-gains" style="display:none;">
+    <div class="card">
+      <div class="card-title">💶 Récapitulatif financier</div>
+      <div id="gainsContent"><div class="empty-state"><div class="empty-icon">⏳</div>Chargement…</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 Détail par mois</div>
+      <div id="gainsMois"><div class="empty-state"><div class="empty-icon">📂</div>Aucune donnée</div></div>
+    </div>
+  </div>
+
+  <!-- TAB : PROFIL -->
+  <div class="content" id="tab-profil" style="display:none;">
+    <div class="card">
+      <div class="card-title">👤 Mes informations</div>
+      <div class="form-group">
+        <label class="form-label">Prénom</label>
+        <input type="text" class="form-input" id="proPrenom">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nom</label>
+        <input type="text" class="form-input" id="proNom">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Spécialité</label>
+        <input type="text" class="form-input" id="proSpecialite">
+      </div>
+      <div class="form-group">
+        <label class="form-label">WhatsApp</label>
+        <input type="tel" class="form-input" id="proWhatsapp">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Biographie (visible sur votre profil public)</label>
+        <textarea class="form-textarea" id="proBio"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="saveProfil()">💾 Enregistrer mon profil</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔒 Changer mon mot de passe</div>
+      <div class="form-group">
+        <label class="form-label">Nouveau mot de passe</label>
+        <input type="password" class="form-input" id="newPassword" placeholder="Minimum 8 caractères">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirmer</label>
+        <input type="password" class="form-input" id="confirmPassword" placeholder="Répétez le mot de passe">
+      </div>
+      <div id="pwdError" style="color:var(--error);font-size:0.82rem;margin-bottom:10px;display:none;"></div>
+      <button class="btn btn-primary" onclick="changePassword()">Changer le mot de passe</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = 'https://oybfxetivkwnynpvojki.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_3lGMf5FZavPM9aSnZEqlFA_6uzmH_CL';
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const PRICE_TTC = 38;
+const COMM_YEAR1 = 0.20;
+const COMM_AFTER = 0.15;
+
+let currentPro = null;
+
+// ── Auth ────────────────────────────────────────────────────────────────────
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  errEl.style.display = 'none';
+
+  if (!email || !pwd) { errEl.textContent = 'Remplissez tous les champs.'; errEl.style.display = 'block'; return; }
+
+  const { data, error } = await db.auth.signInWithPassword({ email, password: pwd });
+  if (error) {
+    errEl.textContent = 'Email ou mot de passe incorrect.';
+    errEl.style.display = 'block';
+    return;
+  }
+  await loadApp(data.user);
+}
+
+async function doLogout() {
+  await db.auth.signOut();
+  currentPro = null;
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+async function checkSession() {
+  const { data } = await db.auth.getSession();
+  if (data.session) await loadApp(data.session.user);
+}
+
+// ── Load app ────────────────────────────────────────────────────────────────
+async function loadApp(user) {
+  // Chercher le praticien dans la table pros
+  const { data: pros } = await db.from('pros').select('*').eq('email', user.email).single();
+
+  if (!pros) {
+    document.getElementById('loginError').textContent = 'Compte non trouvé ou non validé. Contactez reservation.psycholab@gmail.com';
+    document.getElementById('loginError').style.display = 'block';
+    await db.auth.signOut();
+    return;
+  }
+
+  currentPro = pros;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').classList.add('active');
+  document.getElementById('topbarName').textContent = pros.prenom + ' ' + pros.nom;
+
+  loadRdvs();
+  loadDispos();
+  loadGains();
+  loadProfil();
+}
+
+// ── Tab navigation ──────────────────────────────────────────────────────────
+function showTab(name) {
+  ['rdvs','dispos','gains','profil'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-tab').forEach((btn, i) => {
+    btn.classList.toggle('active', ['rdvs','dispos','gains','profil'][i] === name);
+  });
+}
+
+// ── RDV ─────────────────────────────────────────────────────────────────────
+async function loadRdvs() {
+  const now = new Date().toISOString();
+  const { data: rdvs } = await db.from('rdvs')
+    .select('*')
+    .eq('pro_id', currentPro.id)
+    .order('date_rdv', { ascending: true });
+
+  if (!rdvs) return;
+
+  const upcoming = rdvs.filter(r => r.date_rdv >= now);
+  const past = rdvs.filter(r => r.date_rdv < now);
+
+  // Stats
+  const thisMonth = rdvs.filter(r => {
+    const d = new Date(r.date_rdv);
+    const n = new Date();
+    return d.getMonth() === n.getMonth() && d.getFullYear() === n.getFullYear();
+  });
+
+  document.getElementById('statTotal').textContent = rdvs.length;
+  document.getElementById('statMois').textContent = thisMonth.length;
+
+  if (upcoming.length > 0) {
+    const next = new Date(upcoming[0].date_rdv);
+    const days = Math.ceil((next - new Date()) / 86400000);
+    document.getElementById('statProchain').textContent = days === 0 ? 'Auj.' : days + 'j';
+  } else {
+    document.getElementById('statProchain').textContent = '—';
+  }
+
+  // Upcoming list
+  document.getElementById('rdvList').innerHTML = upcoming.length === 0
+    ? '<div class="empty-state"><div class="empty-icon">🎉</div>Aucun RDV à venir</div>'
+    : upcoming.map(r => renderRdv(r)).join('');
+
+  // Past list
+  document.getElementById('rdvPastList').innerHTML = past.length === 0
+    ? '<div class="empty-state"><div class="empty-icon">📂</div>Aucun RDV passé</div>'
+    : past.slice(-10).reverse().map(r => renderRdv(r)).join('');
+}
+
+function renderRdv(r) {
+  const d = new Date(r.date_rdv);
+  const day = d.getDate();
+  const month = d.toLocaleDateString('fr-FR', { month: 'short' });
+  const heure = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+  const statusMap = {
+    'en_attente': ['badge-pending', 'En attente'],
+    'payé': ['badge-paid', 'Payé'],
+    'terminé': ['badge-done', 'Terminé'],
+  };
+  const [cls, label] = statusMap[r.payment_status] || ['badge-pending', r.payment_status || '—'];
+
+  return `<div class="rdv-item">
+    <div class="rdv-date"><div class="rdv-day">${day}</div><div class="rdv-month">${month}</div></div>
+    <div class="rdv-info">
+      <div class="rdv-patient">${r.patient_name || '—'}</div>
+      <div class="rdv-meta">${heure} · ${r.motif || 'Consultation'}</div>
+    </div>
+    <span class="rdv-badge ${cls}">${label}</span>
+  </div>`;
+}
+
+// ── Disponibilités ───────────────────────────────────────────────────────────
+function loadDispos() {
+  if (!currentPro.disponibilites) return;
+  let slots = [];
+  try { slots = JSON.parse(currentPro.disponibilites); } catch(e) {
+    slots = currentPro.disponibilites.split('|').map(s => s.trim());
+  }
+  document.querySelectorAll('.dispo-check').forEach(cb => {
+    cb.checked = slots.includes(cb.dataset.slot);
+  });
+}
+
+async function saveDispos() {
+  const slots = [];
+  document.querySelectorAll('.dispo-check:checked').forEach(cb => slots.push(cb.dataset.slot));
+  const { error } = await db.from('pros')
+    .update({ disponibilites: JSON.stringify(slots) })
+    .eq('id', currentPro.id);
+  if (!error) { currentPro.disponibilites = JSON.stringify(slots); showSaved(); }
+  else alert('Erreur lors de la sauvegarde.');
+}
+
+async function saveAbsence() {
+  const debut = document.getElementById('absenceDebut').value;
+  const fin = document.getElementById('absenceFin').value;
+  const raison = document.getElementById('absenceRaison').value;
+  if (!debut || !fin) { alert('Indiquez les dates de début et de fin.'); return; }
+
+  const absences = currentPro.absences ? JSON.parse(currentPro.absences || '[]') : [];
+  absences.push({ debut, fin, raison });
+  await db.from('pros').update({ absences: JSON.stringify(absences) }).eq('id', currentPro.id);
+  showSaved();
+  document.getElementById('absenceDebut').value = '';
+  document.getElementById('absenceFin').value = '';
+  document.getElementById('absenceRaison').value = '';
+}
+
+// ── Gains ────────────────────────────────────────────────────────────────────
+async function loadGains() {
+  const { data: rdvs } = await db.from('rdvs')
+    .select('*')
+    .eq('pro_id', currentPro.id)
+    .eq('payment_status', 'payé');
+
+  if (!rdvs || rdvs.length === 0) {
+    document.getElementById('gainsContent').innerHTML = '<div class="empty-state"><div class="empty-icon">💶</div>Aucun RDV payé pour l\'instant</div>';
+    return;
+  }
+
+  // Commission rate
+  const created = new Date(currentPro.created_at);
+  const now = new Date();
+  const monthsOld = (now - created) / (1000 * 60 * 60 * 24 * 30);
+  const commRate = monthsOld >= 12 ? COMM_AFTER : COMM_YEAR1;
+  const netRate = 1 - commRate;
+
+  const totalBrut = rdvs.length * PRICE_TTC;
+  const totalNet = rdvs.length * PRICE_TTC * netRate;
+  const totalComm = totalBrut - totalNet;
+
+  document.getElementById('gainsContent').innerHTML = `
+    <div class="earning-row"><span class="earning-label">Séances payées</span><span class="earning-value">${rdvs.length} séance${rdvs.length > 1 ? 's' : ''}</span></div>
+    <div class="earning-row"><span class="earning-label">Total brut (38 € × ${rdvs.length})</span><span class="earning-value">${totalBrut.toFixed(2)} €</span></div>
+    <div class="earning-row"><span class="earning-label">Commission Psycholab (${Math.round(commRate * 100)}%)</span><span class="earning-value" style="color:var(--error);">−${totalComm.toFixed(2)} €</span></div>
+    <div class="earning-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:12px;">
+      <span class="earning-label" style="font-weight:700;">Net à percevoir</span>
+      <span class="earning-value positive" style="font-size:1.1rem;">${totalNet.toFixed(2)} €</span>
+    </div>
+    <div class="earning-row"><span class="earning-label">Taux commission actuel</span><span class="earning-value">${monthsOld < 12 ? '20% (1ère année)' : '15% (fidélité)'}</span></div>
+  `;
+
+  // Par mois
+  const byMonth = {};
+  rdvs.forEach(r => {
+    const d = new Date(r.date_rdv);
+    const key = d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    byMonth[key] = (byMonth[key] || 0) + 1;
+  });
+  document.getElementById('gainsMois').innerHTML = Object.entries(byMonth).reverse().map(([m, n]) =>
+    `<div class="earning-row"><span class="earning-label">${m}</span><span class="earning-value">${n} séance${n > 1 ? 's' : ''} · ${(n * PRICE_TTC * netRate).toFixed(2)} € net</span></div>`
+  ).join('');
+}
+
+// ── Profil ───────────────────────────────────────────────────────────────────
+function loadProfil() {
+  document.getElementById('proPrenom').value = currentPro.prenom || '';
+  document.getElementById('proNom').value = currentPro.nom || '';
+  document.getElementById('proSpecialite').value = currentPro.specialite || '';
+  document.getElementById('proWhatsapp').value = currentPro.whatsapp || '';
+  document.getElementById('proBio').value = currentPro.bio || '';
+}
+
+async function saveProfil() {
+  const updates = {
+    prenom: document.getElementById('proPrenom').value.trim(),
+    nom: document.getElementById('proNom').value.trim(),
+    specialite: document.getElementById('proSpecialite').value.trim(),
+    whatsapp: document.getElementById('proWhatsapp').value.trim(),
+    bio: document.getElementById('proBio').value.trim(),
+  };
+  const { error } = await db.from('pros').update(updates).eq('id', currentPro.id);
+  if (!error) { Object.assign(currentPro, updates); showSaved(); }
+  else alert('Erreur lors de la sauvegarde.');
+}
+
+async function changePassword() {
+  const p1 = document.getElementById('newPassword').value;
+  const p2 = document.getElementById('confirmPassword').value;
+  const errEl = document.getElementById('pwdError');
+  errEl.style.display = 'none';
+
+  if (p1.length < 8) { errEl.textContent = 'Le mot de passe doit contenir au moins 8 caractères.'; errEl.style.display = 'block'; return; }
+  if (p1 !== p2) { errEl.textContent = 'Les mots de passe ne correspondent pas.'; errEl.style.display = 'block'; return; }
+
+  const { error } = await db.auth.updateUser({ password: p1 });
+  if (!error) { showSaved(); document.getElementById('newPassword').value = ''; document.getElementById('confirmPassword').value = ''; }
+  else { errEl.textContent = 'Erreur : ' + error.message; errEl.style.display = 'block'; }
+}
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
+function showSaved() {
+  const el = document.getElementById('savingIndicator');
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+checkSession();
+</script>
+</body>
+</html>
