@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Psycholab</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: sans-serif; background: #f0f4f2; min-height: 100vh; }
+
+.header { background: #1a7a5e; color: white; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 16px; }
+.header span { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 3px 12px; font-size: 13px; }
+
+/* LOGIN */
+#loginPage { display: flex; justify-content: center; align-items: center; min-height: 85vh; padding: 20px; }
+.box { background: white; border-radius: 16px; padding: 32px 24px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.box h2 { color: #1a7a5e; font-size: 22px; margin-bottom: 24px; }
+.box input { display: block; width: 100%; padding: 14px; border: 2px solid #ddd; border-radius: 10px; font-size: 16px; margin-bottom: 12px; outline: none; }
+.box input:focus { border-color: #1a7a5e; }
+.passWrap { position: relative; margin-bottom: 12px; }
+.passWrap input { margin-bottom: 0; padding-right: 48px; }
+.passWrap button { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 20px; cursor: pointer; padding: 0; }
+.btnLogin { width: 100%; padding: 16px; background: #1a7a5e; color: white; border: none; border-radius: 10px; font-size: 17px; font-weight: bold; cursor: pointer; }
+.btnLogin:active { background: #155f4a; }
+.errMsg { color: #dc2626; font-size: 14px; margin-top: 10px; }
+
+/* MAIN */
+#mainPage { display: none; padding: 16px; max-width: 800px; margin: 0 auto; }
+.tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.tab { padding: 8px 16px; border-radius: 20px; border: 2px solid #cde0d8; background: white; color: #555; font-size: 14px; font-weight: 600; cursor: pointer; }
+.tab.on { background: #1a7a5e; color: white; border-color: #1a7a5e; }
+.nb { background: #e67e00; color: white; border-radius: 10px; padding: 1px 7px; font-size: 12px; margin-left: 4px; }
+
+/* CARDS */
+.card { background: white; border-radius: 12px; margin-bottom: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.cardHead { display: flex; align-items: center; gap: 12px; padding: 14px; cursor: pointer; }
+.ava { width: 46px; height: 46px; border-radius: 50%; background: #e0f0ea; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.info { flex: 1; }
+.info strong { font-size: 15px; display: block; }
+.info small { color: #888; font-size: 13px; }
+.tagW { background: #fff3cd; color: #b45309; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: bold; }
+.tagV { background: #d1fae5; color: #065f46; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: bold; }
+.tagR { background: #fee2e2; color: #b91c1c; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: bold; }
+
+.detail { display: none; padding: 14px; border-top: 1px solid #eee; }
+.detail.open { display: block; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.grid2 label { font-size: 11px; font-weight: bold; text-transform: uppercase; color: #888; display: block; }
+.grid2 p { font-size: 14px; }
+.bioSec { margin-bottom: 12px; }
+.bioSec label { font-size: 11px; font-weight: bold; text-transform: uppercase; color: #888; display: block; margin-bottom: 4px; }
+.bioSec p { font-size: 14px; line-height: 1.5; }
+.btnRow { display: flex; gap: 10px; padding-top: 12px; border-top: 1px solid #eee; }
+.btnV { flex: 1; padding: 12px; background: #1a7a5e; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; }
+.btnR { flex: 1; padding: 12px; background: #fee2e2; color: #b91c1c; border: 2px solid #b91c1c; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; }
+.msg { padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-top: 10px; display: none; }
+.msgOk { background: #d1fae5; color: #065f46; }
+.msgErr { background: #fee2e2; color: #b91c1c; }
+
+/* RESERVATIONS */
+.rCard { background: white; border-radius: 12px; margin-bottom: 10px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.rHead { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.rName { font-size: 15px; font-weight: 700; }
+.rSub { font-size: 13px; color: #888; margin-top: 2px; }
+.tagS0 { background: #fff3cd; color: #b45309; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: bold; white-space: nowrap; }
+.tagS1 { background: #d1fae5; color: #065f46; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: bold; white-space: nowrap; }
+.tagS2 { background: #fee2e2; color: #b91c1c; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: bold; white-space: nowrap; }
+.rGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; border-top: 1px solid #f0f0f0; padding-top: 10px; }
+.rGrid label { font-size: 11px; font-weight: bold; text-transform: uppercase; color: #aaa; display: block; margin-bottom: 2px; }
+.rLink { display: inline-block; margin-top: 8px; padding: 8px 14px; background: #e0f0ea; color: #1a7a5e; border-radius: 8px; font-size: 13px; font-weight: 600; text-decoration: none; word-break: break-all; }
+
+/* STATS */
+.sGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+.sTile { background: white; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.sTile .num { font-size: 32px; font-weight: 800; color: #1a7a5e; }
+.sTile .lbl { font-size: 13px; color: #888; margin-top: 4px; }
+.sTable { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.sTable h3 { padding: 14px; font-size: 14px; border-bottom: 1px solid #eee; }
+.sRow { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 10px 14px; border-bottom: 1px solid #eee; font-size: 13px; align-items: center; }
+.sRow:last-child { border-bottom: none; }
+.sRow.hdr { font-weight: 700; font-size: 11px; text-transform: uppercase; color: #888; background: #f8faf9; }
+
+.empty { text-align: center; padding: 40px; color: #aaa; font-size: 15px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🧠 Psycholab Admin</h1>
+  <span id="hbadge">—</span>
+</div>
+
+<!-- PAGE LOGIN -->
+<div id="loginPage">
+  <div class="box">
+    <h2>🔐 Accès Admin</h2>
+    <input type="email" id="fEmail" value="psycholab.tn@gmail.com" placeholder="Email">
+    <div class="passWrap">
+      <input type="password" id="fPass" placeholder="Mot de passe">
+      <button id="eyeBtn" type="button">👁️</button>
+    </div>
+    <button class="btnLogin" id="btnLogin" type="button">Se connecter</button>
+    <div class="errMsg" id="errMsg"></div>
+  </div>
+</div>
+
+<!-- PAGE MAIN -->
+<div id="mainPage">
+  <div class="tabs">
+    <div class="tab on" id="t0">En attente <span class="nb" id="nbW">0</span></div>
+    <div class="tab" id="t1">Validés</div>
+    <div class="tab" id="t2">Rejetés</div>
+    <div class="tab" id="t3">Tous</div>
+    <div class="tab" id="t4">📅 Réservations</div>
+    <div class="tab" id="t5">📊 Stats</div>
+  </div>
+  <div id="listArea"></div>
+  <div id="rezArea" style="display:none"></div>
+  <div id="statsArea" style="display:none"></div>
+</div>
+
+<script>
+var URL = 'https://oybfxetivkwnynpvojki.supabase.co/rest/v1/pros';
+var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im95YmZ4ZXRpdmt3bnlucHZvamtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2MDI2NTgsImV4cCI6MjA1OTE3ODY1OH0.Gy5o2vLgMJZTBMVlMFTHcHd0W2AblrBkFU3YPtSmOfM';
+var PASS = 'PsychoAdmin2024!';
+var pros = [];
+var curTab = 0;
+
+// Boutons
+document.getElementById('btnLogin').onclick = doLogin;
+document.getElementById('eyeBtn').onclick = function() {
+  var f = document.getElementById('fPass');
+  var b = document.getElementById('eyeBtn');
+  if (f.type === 'password') { f.type = 'text'; b.textContent = '🙈'; }
+  else { f.type = 'password'; b.textContent = '👁️'; }
+};
+document.getElementById('fPass').onkeydown = function(e) { if (e.key === 'Enter') doLogin(); };
+document.getElementById('t0').onclick = function() { showTab(0); };
+document.getElementById('t1').onclick = function() { showTab(1); };
+document.getElementById('t2').onclick = function() { showTab(2); };
+document.getElementById('t3').onclick = function() { showTab(3); };
+document.getElementById('t4').onclick = function() { showTab(4); };
+document.getElementById('t5').onclick = function() { showTab(5); };
+
+function doLogin() {
+  var email = document.getElementById('fEmail').value.trim();
+  var pass = document.getElementById('fPass').value;
+  var err = document.getElementById('errMsg');
+
+  if (email !== 'psycholab.tn@gmail.com') { err.textContent = '❌ Email incorrect.'; return; }
+  if (pass !== PASS) { err.textContent = '❌ Mot de passe incorrect.'; return; }
+
+  err.textContent = '';
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('mainPage').style.display = 'block';
+  loadData();
+}
+
+function headers() {
+  return { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY };
+}
+
+function loadData() {
+  document.getElementById('hbadge').textContent = '⏳ Chargement...';
+  fetch(URL + '?select=*&order=candidature_date.desc', { headers: headers() })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      pros = Array.isArray(data) ? data : [];
+      var w = pros.filter(function(p) { return statut(p) === 'en_attente'; }).length;
+      document.getElementById('nbW').textContent = w;
+      document.getElementById('hbadge').textContent = w + ' en attente';
+      loadRez();
+      showTab(0);
+    })
+    .catch(function() {
+      document.getElementById('hbadge').textContent = 'Erreur';
+      document.getElementById('listArea').innerHTML = '<div class="empty">❌ Erreur de connexion.</div>';
+    });
+}
+
+function statut(p) {
+  if (p.statut_candidature) return p.statut_candidature;
+  return p.active ? 'valide' : 'en_attente';
+}
+
+function showTab(n) {
+  curTab = n;
+  for (var i = 0; i < 6; i++) document.getElementById('t'+i).className = 'tab';
+  document.getElementById('t'+n).className = 'tab on';
+  document.getElementById('listArea').style.display = (n < 4) ? 'block' : 'none';
+  document.getElementById('rezArea').style.display = n === 4 ? 'block' : 'none';
+  document.getElementById('statsArea').style.display = n === 5 ? 'block' : 'none';
+  if (n === 5) renderStats();
+  else if (n === 4) { /* already loaded */ }
+  else renderList(n);
+}
+
+function renderList(n) {
+  var list = pros;
+  if (n === 0) list = pros.filter(function(p){ return statut(p) === 'en_attente'; });
+  if (n === 1) list = pros.filter(function(p){ return statut(p) === 'valide'; });
+  if (n === 2) list = pros.filter(function(p){ return statut(p) === 'rejete'; });
+
+  if (!list.length) {
+    document.getElementById('listArea').innerHTML = '<div class="empty">📭 Aucune entrée ici.</div>';
+    return;
+  }
+
+  var html = '';
+  for (var i = 0; i < list.length; i++) {
+    var p = list[i];
+    var s = statut(p);
+    var tag = s === 'en_attente' ? '<span class="tagW">⏳ Attente</span>' : s === 'valide' ? '<span class="tagV">✅ Actif</span>' : '<span class="tagR">❌ Rejeté</span>';
+    var date = p.candidature_date ? new Date(p.candidature_date).toLocaleDateString('fr-FR') : '—';
+    var langs = [(p.lang_fr ? 'FR' : ''), (p.lang_ar ? 'AR' : ''), (p.lang_en ? 'EN' : '')].filter(Boolean).join(' · ') || '—';
+    var btns = s === 'en_attente'
+      ? '<button class="btnV" onclick="valider(\''+p.id+'\',this)">✅ Valider</button><button class="btnR" onclick="rejeter(\''+p.id+'\',this)">❌ Rejeter</button>'
+      : s === 'valide'
+      ? '<button class="btnR" onclick="rejeter(\''+p.id+'\',this)">Désactiver</button>'
+      : '<button class="btnV" onclick="valider(\''+p.id+'\',this)">Réactiver</button>';
+
+    html += '<div class="card">'
+      + '<div class="cardHead" onclick="tog(\'det_'+p.id+'\')">'
+      + '<div class="ava">👤</div>'
+      + '<div class="info"><strong>'+(p.fn||'')+' '+(p.ln||'')+'</strong><small>'+(p.spec||'—')+' · '+date+'</small></div>'
+      + tag
+      + '</div>'
+      + '<div class="detail" id="det_'+p.id+'">'
+      + '<div class="grid2">'
+      + '<div><label>Email</label><p>'+(p.email||'—')+'</p></div>'
+      + '<div><label>Tél</label><p>'+(p.tel||'—')+'</p></div>'
+      + '<div><label>Tarif</label><p>'+(p.price||'—')+' TND</p></div>'
+      + '<div><label>Langues</label><p>'+langs+'</p></div>'
+      + '</div>'
+      + '<div class="bioSec"><label>Biographie</label><p>'+(p.bio||'—')+'</p></div>'
+      + '<div class="btnRow">'+btns+'</div>'
+      + '<div class="msg" id="msg_'+p.id+'"></div>'
+      + '</div></div>';
+  }
+  document.getElementById('listArea').innerHTML = html;
+}
+
+function tog(id) {
+  var el = document.getElementById(id);
+  el.className = el.className === 'detail open' ? 'detail' : 'detail open';
+}
+
+function valider(id, btn) {
+  btn.disabled = true; btn.textContent = '⏳';
+  var msg = document.getElementById('msg_'+id);
+  fetch(URL + '?id=eq.' + id, {
+    method: 'PATCH',
+    headers: Object.assign({}, headers(), {'Content-Type': 'application/json', 'Prefer': 'return=minimal'}),
+    body: JSON.stringify({ active: true, statut_candidature: 'valide' })
+  }).then(function(r) {
+    msg.style.display = 'block';
+    if (r.ok) {
+      msg.className = 'msg msgOk'; msg.textContent = '✅ Profil validé !';
+      for (var i = 0; i < pros.length; i++) { if (pros[i].id === id) { pros[i].active = true; pros[i].statut_candidature = 'valide'; break; } }
+      btn.textContent = '✅ Validé';
+    } else {
+      msg.className = 'msg msgErr'; msg.textContent = '❌ Erreur.';
+      btn.disabled = false; btn.textContent = '✅ Valider';
+    }
+  });
+}
+
+function rejeter(id, btn) {
+  if (!confirm('Confirmer le rejet ?')) return;
+  btn.disabled = true; btn.textContent = '⏳';
+  var msg = document.getElementById('msg_'+id);
+  fetch(URL + '?id=eq.' + id, {
+    method: 'PATCH',
+    headers: Object.assign({}, headers(), {'Content-Type': 'application/json', 'Prefer': 'return=minimal'}),
+    body: JSON.stringify({ active: false, statut_candidature: 'rejete' })
+  }).then(function(r) {
+    msg.style.display = 'block';
+    if (r.ok) {
+      msg.className = 'msg msgErr'; msg.textContent = '❌ Rejeté.';
+      for (var i = 0; i < pros.length; i++) { if (pros[i].id === id) { pros[i].active = false; pros[i].statut_candidature = 'rejete'; break; } }
+      btn.textContent = 'Rejeté';
+    } else {
+      msg.className = 'msg msgErr'; msg.textContent = '❌ Erreur.';
+      btn.disabled = false;
+    }
+  });
+}
+
+var rezData = [];
+
+function loadRez() {
+  // Essaie d'abord "appointments", puis "bookings", puis "sessions"
+  tryRezTable('appointments');
+}
+
+function tryRezTable(tbl) {
+  fetch('https://oybfxetivkwnynpvojki.supabase.co/rest/v1/' + tbl + '?select=*&order=created_at.desc', { headers: headers() })
+    .then(function(r) {
+      if (r.status === 404 || r.status === 400) {
+        if (tbl === 'appointments') tryRezTable('bookings');
+        else if (tbl === 'bookings') tryRezTable('sessions');
+        else renderRez([], 'introuvable');
+        return null;
+      }
+      return r.json();
+    })
+    .then(function(data) {
+      if (!data) return;
+      if (data.code === '42P01') {
+        if (tbl === 'appointments') tryRezTable('bookings');
+        else if (tbl === 'bookings') tryRezTable('sessions');
+        else renderRez([], 'introuvable');
+        return;
+      }
+      rezData = Array.isArray(data) ? data : [];
+      renderRez(rezData, tbl);
+    })
+    .catch(function() { renderRez([], 'erreur'); });
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  var dt = new Date(d);
+  return dt.toLocaleDateString('fr-FR') + ' ' + dt.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+}
+
+function rezStatut(r) {
+  var s = r.status || r.statut || r.state || '';
+  s = s.toLowerCase();
+  if (s === 'confirmed' || s === 'confirmé' || s === 'active') return 'confirmé';
+  if (s === 'cancelled' || s === 'annulé' || s === 'canceled') return 'annulé';
+  return 'en attente';
+}
+
+function renderRez(list, src) {
+  var area = document.getElementById('rezArea');
+  if (src === 'introuvable') {
+    area.innerHTML = '<div class="empty">📭 Aucune table de réservations trouvée.<br><small style="font-size:12px">Vérifiez que votre base contient une table "appointments", "bookings" ou "sessions".</small></div>';
+    return;
+  }
+  if (src === 'erreur') {
+    area.innerHTML = '<div class="empty">❌ Erreur de connexion.</div>';
+    return;
+  }
+  if (!list.length) {
+    area.innerHTML = '<div class="empty">📭 Aucune réservation pour l\'instant.</div>';
+    return;
+  }
+
+  // Compte par statut
+  var tot = list.length;
+  var conf = list.filter(function(r){ return rezStatut(r)==='confirmé'; }).length;
+  var att = list.filter(function(r){ return rezStatut(r)==='en attente'; }).length;
+  var ann = list.filter(function(r){ return rezStatut(r)==='annulé'; }).length;
+
+  var html = '<div class="sGrid" style="margin-bottom:12px">'
+    + '<div class="sTile"><div class="num">'+tot+'</div><div class="lbl">Total</div></div>'
+    + '<div class="sTile"><div class="num">'+conf+'</div><div class="lbl">Confirmées</div></div>'
+    + '<div class="sTile"><div class="num">'+att+'</div><div class="lbl">En attente</div></div>'
+    + '<div class="sTile"><div class="num">'+ann+'</div><div class="lbl">Annulées</div></div>'
+    + '</div>';
+
+  for (var i = 0; i < list.length; i++) {
+    var r = list[i];
+    var s = rezStatut(r);
+    var tagClass = s === 'confirmé' ? 'tagS1' : s === 'annulé' ? 'tagS2' : 'tagS0';
+    var tagLabel = s === 'confirmé' ? '✅ Confirmé' : s === 'annulé' ? '❌ Annulé' : '⏳ En attente';
+
+    // Champs patient
+    var patName = r.patient_name || r.client_name || r.nom || r.name || '—';
+    var patEmail = r.patient_email || r.client_email || r.email || '—';
+    var patTel = r.patient_phone || r.client_phone || r.phone || r.tel || '—';
+
+    // Champs séance
+    var proName = r.pro_name || r.practitioner_name || r.praticien || '—';
+    var dateRdv = r.appointment_date || r.date || r.scheduled_at || r.start_time || r.created_at || null;
+    var lien = r.meeting_link || r.link || r.session_url || r.url || null;
+
+    html += '<div class="rCard">'
+      + '<div class="rHead"><div><div class="rName">'+patName+'</div><div class="rSub">'+patEmail+'</div></div>'
+      + '<span class="'+tagClass+'">'+tagLabel+'</span></div>'
+      + '<div class="rGrid">'
+      + '<div><label>Date RDV</label>'+fmtDate(dateRdv)+'</div>'
+      + '<div><label>Praticien</label>'+proName+'</div>'
+      + '<div><label>Téléphone</label>'+patTel+'</div>'
+      + '<div><label>Créé le</label>'+fmtDate(r.created_at)+'</div>'
+      + '</div>'
+      + (lien ? '<a class="rLink" href="'+lien+'" target="_blank">🔗 Lien de séance</a>' : '')
+      + '</div>';
+  }
+  area.innerHTML = html;
+}
+
+function renderStats() {
+  var total = pros.length;
+  var actifs = pros.filter(function(p){ return statut(p) === 'valide'; }).length;
+  var attente = pros.filter(function(p){ return statut(p) === 'en_attente'; }).length;
+  var debut = new Date(); debut.setDate(1); debut.setHours(0,0,0,0);
+  var mois = pros.filter(function(p){ return p.candidature_date && new Date(p.candidature_date) >= debut; }).length;
+
+  var rows = '';
+  for (var i = 0; i < pros.length; i++) {
+    var p = pros[i];
+    var s = statut(p);
+    var tag = s === 'valide' ? '<span class="tagV">✅ Actif</span>' : s === 'en_attente' ? '<span class="tagW">⏳ Attente</span>' : '<span class="tagR">❌ Rejeté</span>';
+    var d = p.candidature_date ? new Date(p.candidature_date).toLocaleDateString('fr-FR') : '—';
+    rows += '<div class="sRow"><div><strong>'+(p.fn||'')+' '+(p.ln||'')+'</strong><br><small style="color:#888">'+(p.email||'')+'</small><br><small style="color:#aaa">'+d+'</small></div><div>'+tag+'</div></div>';
+  }
+
+  document.getElementById('statsArea').innerHTML =
+    '<div class="sGrid">'
+    + '<div class="sTile"><div class="num">'+total+'</div><div class="lbl">Inscrits</div></div>'
+    + '<div class="sTile"><div class="num">'+actifs+'</div><div class="lbl">Actifs</div></div>'
+    + '<div class="sTile"><div class="num">'+attente+'</div><div class="lbl">En attente</div></div>'
+    + '<div class="sTile"><div class="num">'+mois+'</div><div class="lbl">Ce mois</div></div>'
+    + '</div>'
+    + '<div class="sTable"><h3>👥 Liste des praticiens</h3>'
+    + (rows || '<div class="empty">Aucun praticien.</div>')
+    + '</div>';
+}
+</script>
+</body>
+</html>
